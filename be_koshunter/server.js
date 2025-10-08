@@ -11,6 +11,9 @@ app.use(express.json())
 const authUser = require('./routes/authUser.route')
 app.use(`/authUser`, authUser)
 
+const user = require('./routes/user.route')
+app.use(`/user`, user)
+
 app.listen(PORT, () => {
     console.log(`Server of Kos Hunter runs on port ${PORT}`)
 })
