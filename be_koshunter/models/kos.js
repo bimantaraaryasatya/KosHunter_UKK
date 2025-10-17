@@ -17,7 +17,16 @@ module.exports = (sequelize, DataTypes) => {
     name: DataTypes.STRING,
     address: DataTypes.STRING,
     price_per_month: DataTypes.INTEGER,
-    gender: DataTypes.ENUM('male', 'female', 'all')
+    gender: {
+      type: DataTypes.ENUM('male', 'female', 'all'),
+      allowNull: false,
+      validate: {
+        isIn: {
+          args: [['male', 'female', 'all']],
+          msg: "Gender must be one of 'male', 'female', or 'all'"
+        }
+      }
+    },
   }, {
     sequelize,
     modelName: 'kos',

@@ -26,7 +26,20 @@ exports.getAllKos = async(request, response) => {
 }
 
 exports.createKos = async (request, response) => {
-
+    try {
+        const {name, address, price_per_month, gender} = request.body
+        const newKos = await kosModel.create({name, address, price_per_month, gender})
+        return response.status(200).json({
+            status: true,
+            data: newKos,
+            message: "Kos has been created"
+        })
+    } catch (error) {
+        return response.status(500).json({
+            status: false,
+            message: error.message
+        })
+    }
 }
 
 exports.findKos = async(request, response) => {
