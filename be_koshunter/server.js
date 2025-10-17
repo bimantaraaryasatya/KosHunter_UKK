@@ -14,6 +14,9 @@ app.use(`/authUser`, authUser)
 const user = require('./routes/user.route')
 app.use(`/user`, user)
 
+const kos = require('./routes/kos.route')
+app.use(`/kos`, kos)
+
 app.listen(PORT, () => {
     console.log(`Server of Kos Hunter runs on port ${PORT}`)
 })

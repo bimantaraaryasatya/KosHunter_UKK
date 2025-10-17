@@ -3,8 +3,6 @@ const Op = require(`sequelize`).Op
 
 exports.getAllUser = async(request, response) => {
     try {
-        const { search } = request.query;
-
         const users = await userModel.findAll()
         return response.status(200).json({
             status: true,
