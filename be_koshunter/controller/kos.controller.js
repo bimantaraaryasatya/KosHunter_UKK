@@ -74,7 +74,54 @@ exports.findKos = async(request, response) => {
 }
 
 exports.updateKos = async(request, response) => {
+    try {
+        let dataKos = {
+            name: request.body.name,
+            address: request.body.address,
+            price_per_month: Number(request.body.price_per_month),
+            gender: request.body.gender
+        }
     
+        let idKos = request.params.id
+        const existingKos = await kosModel.findOne({where: {id: idKos}})
+        if (!existingKos) {
+            return response.status(404).json({
+                status: false,
+                message: `Kos with id ${idKos} not found`
+            })
+        }
+        const oldData = existingKos.get({plain: true})
+    
+        const isSame = JSON.stringify({
+            name: oldData.name,
+            address: oldData.address,
+            price_per_month: oldData.price_per_month,
+            gender: oldData.gender
+        }) === JSON.stringify(dataKos);
+        
+        console.log("OLD DATA:", oldData);
+        console.log("NEW DATA:", dataKos);
+
+        if (isSame) {
+            return response.status(400).json({
+                status: false,
+                message: "No changes detected. Data is the same as before."
+            });
+        }
+    
+        await kosModel.update(dataKos, { where: { id: idKos } })
+        
+        return response.json({
+            status: true,
+            data: dataKos,
+            message: `Data kos has been updated`
+        })
+    } catch (error) {
+        return response.status(500).json({
+            status: false,
+            message: error.message
+        })
+    }
 }
 
 exports.deleteKos = async(request, response) => {

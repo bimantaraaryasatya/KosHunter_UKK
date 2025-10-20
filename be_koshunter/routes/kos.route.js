@@ -5,7 +5,7 @@ const app = express()
 app.get("/", kosController.getAllKos)
 app.post("/find", kosController.findKos)
 app.post("/", kosController.createKos)
+app.post("/:id", kosController.updateKos)
 app.delete("/:id", kosController.deleteKos)
-
 
 module.exports = app
