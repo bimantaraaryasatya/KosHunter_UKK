@@ -76,7 +76,15 @@ exports.updateUser = async(request, response) => {
 }
 
 exports.deleteUser = async(request, response) => {
-    let idUser = request.params.id
+    let idUser = parseInt(request.params.id)
+    const currentUser = request.user
+
+    if (currentUser.role !== 'admin' && currentUser.id !== idUser) {
+      return response.status(403).json({
+        status: false,
+        message: "You do not have access for this action"
+      })
+    }
 
     userModel.destroy({where: {id: idUser}})
         .then(result => {

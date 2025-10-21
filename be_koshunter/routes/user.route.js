@@ -1,10 +1,11 @@
 const express = require('express')
 const userController = require(`../controller/user.controller`)
+const { authenticateToken, authorizeRoles } = require('../middleware/auth.middleware')
 const app = express()
 
-app.get("/", userController.getAllUser)
-app.post("/find", userController.findUser)
-app.put("/:id", userController.updateUser)
-app.delete("/:id", userController.deleteUser)
+app.get("/", authenticateToken, userController.getAllUser)
+app.post("/find", authenticateToken, userController.findUser)
+app.put("/:id", authenticateToken, userController.updateUser)
+app.delete("/:id", authenticateToken, authorizeRoles('admin', 'user'), userController.deleteUser)
 
 module.exports = app
