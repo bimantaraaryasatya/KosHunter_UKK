@@ -5,8 +5,8 @@ const app = express()
 
 app.get("/", authenticateToken, kosController.getAllKos)
 app.post("/find", authenticateToken, kosController.findKos)
-app.post("/", authenticateToken, kosController.createKos)
-app.post("/:id", authenticateToken, kosController.updateKos)
-app.delete("/:id", authenticateToken, kosController.deleteKos)
+app.post("/", authenticateToken, authorizeRoles('owner', 'admin'), kosController.createKos)
+app.post("/:id", authenticateToken, authorizeRoles('owner', 'admin'), kosController.updateKos)
+app.delete("/:id", authenticateToken, authorizeRoles('owner', 'admin'), kosController.deleteKos)
 
 module.exports = app
