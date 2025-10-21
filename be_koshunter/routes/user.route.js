@@ -6,6 +6,6 @@ const app = express()
 app.get("/", authenticateToken, userController.getAllUser)
 app.post("/find", authenticateToken, userController.findUser)
 app.put("/:id", authenticateToken, userController.updateUser)
-app.delete("/:id", authenticateToken, authorizeRoles('admin', 'user'), userController.deleteUser)
+app.delete("/:id", authenticateToken, authorizeRoles('society', 'admin'), userController.deleteUser)
 
 module.exports = app
