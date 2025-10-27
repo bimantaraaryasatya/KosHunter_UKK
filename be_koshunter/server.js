@@ -6,6 +6,7 @@ const path = require('path')
 require('dotenv').config();
 app.use(cors())
 app.use(express.json()) 
+app.use(express.urlencoded({ extended: true }))
 // app.use(express.urlencoded({ extended: true })) 
 
 const authUser = require('./routes/authUser.route')
@@ -16,6 +17,9 @@ app.use(`/user`, user)
 
 const kos = require('./routes/kos.route')
 app.use(`/kos`, kos)
+
+const review = require(`./routes/review.route`)
+app.use(`/review`, review)
 
 app.listen(PORT, () => {
     console.log(`Server of Kos Hunter runs on port ${PORT}`)

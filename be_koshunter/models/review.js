@@ -7,6 +7,8 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       review.belongsTo(models.kos, {foreignKey: 'kos_id'})
       review.belongsTo(models.user, {foreignKey: 'user_id'})
+      review.belongsTo(models.review, { as: 'parent', foreignKey: 'parent_id' });
+      review.hasMany(models.review, { as: 'replies', foreignKey: 'parent_id' });
     }
   }
   review.init({
