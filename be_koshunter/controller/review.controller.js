@@ -9,7 +9,7 @@ exports.createReview = async (request, response) => {
         if (userData.role !== 'society') {
             return response.status(403).json({
                 status: false,
-                message: 'Hanya society yang boleh memberi review.'
+                message: 'Only society can do a review'
             })
         }
 
@@ -23,7 +23,7 @@ exports.createReview = async (request, response) => {
         return response.status(201).json({
             status: true,
             data: newReview,
-            message: 'Review berhasil dibuat.'
+            message: 'Review has been created'
         })
     } catch (error) {
         return response.status(500).json({
@@ -41,7 +41,7 @@ exports.replyReview = async (request, response) => {
         if (userData.role !== 'owner') {
             return response.status(403).json({
                 status: false,
-                message: 'Hanya owner yang boleh membalas review.'
+                message: 'Only owner can reply the review'
             })
         }
 
@@ -49,7 +49,7 @@ exports.replyReview = async (request, response) => {
         if (!parentReview) {
             return response.status(404).json({
                 status: false,
-                message: 'Review yang akan dibalas tidak ditemukan.'
+                message: 'Review was not found'
             })
         }
 
@@ -63,7 +63,7 @@ exports.replyReview = async (request, response) => {
         return response.status(201).json({
             status: true,
             data: reply,
-            message: 'Balasan berhasil dikirim.'
+            message: 'Reply sent successfully.'
         })
     } catch (error) {
         return response.status(500).json({
@@ -95,14 +95,14 @@ exports.getReviewsWithReplies = async (request, response) => {
         if (reviews.length === 0) {
             return response.status(200).json({
                 status: false,
-                message: 'Belum ada review untuk kos ini.'
+                message: 'There are no reviews for Kos yet.'
             })
         }
 
         return response.status(200).json({
             status: true,
             data: reviews,
-            message: 'Berhasil mengambil review dan balasan.'
+            message: 'Reviews and replies has been loaded'
         })
     } catch (error) {
         return response.status(500).json({
