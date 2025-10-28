@@ -1,0 +1,1 @@
+const kosFasilitieModel = require(`../models/index`).kos_image
