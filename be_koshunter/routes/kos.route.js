@@ -1,6 +1,7 @@
 const express = require('express')
 const kosController = require(`../controller/kos.controller`)
 const kosFasilitieController = require(`../controller/kosFasilitie.controller`)
+const kosImageController = require(`../controller/kosImage.controller`)
 const { authenticateToken, authorizeRoles } = require(`../middleware/auth.middleware`)
 const app = express()
 
@@ -13,5 +14,7 @@ app.delete("/:id", authenticateToken, authorizeRoles('owner', 'admin'), kosContr
 app.post("/facility", authenticateToken, authorizeRoles('owner', 'admin'), kosFasilitieController.createFacilitiy)
 app.put("/facility/:id", authenticateToken, authorizeRoles('owner', 'admin'), kosFasilitieController.updateFacility)
 app.delete("/facility/:id", authenticateToken, authorizeRoles('owner', 'admin'), kosFasilitieController.deleteFacility)
+
+
 
 module.exports = app
