@@ -22,6 +22,9 @@ app.use(`/kos`, kos)
 const review = require(`./routes/review.route`)
 app.use(`/review`, review)
 
+const book = require(`./routes/book.route`)
+app.use(`/book`, book)
+
 checkConnection()
   .then(() => {
     app.listen(PORT, () => {
