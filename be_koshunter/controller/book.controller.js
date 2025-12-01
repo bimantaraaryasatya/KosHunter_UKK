@@ -167,7 +167,54 @@ exports.updateBook = async (request, response) => {
 }
 
 exports.updateStatusBook = async (request, response) => {
+    try {
+        let idBook = request.params.id
+        const { status } = request.body
 
+        if (!['pending', 'accepted', 'rejected'].includes(status)) {
+            return response.status(400).json({
+                status: false,
+                message: 'Invalid status value'
+            })
+        }
+
+        const existingBook = await bookModel.findOne({where : { id: idBook }})
+
+        if (!existingBook) {
+            return response.status(404).json({
+                status: false,
+                message: `Booking with this id ${idBook} not found`
+            })
+        }
+
+        const kos = await kosModel.findOne({where: { id: existingBook.kos_id }})
+        if (!kos) {
+            return response.status(404).json({
+                status: false,
+                message: `Kos with this id ${existingBook.kos_id} not found`
+            })
+        }
+
+        if (kos.user_id !== request.user.id) {
+            return response.status(403).json({
+                status: false,
+                message: 'You are not the owner of this kos'
+            })
+        }
+
+        await bookModel.update({status}, {where: {id: idBook}})
+
+        return response.json({
+            status: true,
+            data: { status },
+            message: `Booking status has been updated`
+        })
+    } catch (error) {
+        return response.status(500).json({
+            status: false,
+            message: error.message
+        })
+    }
 }
 
 exports.deleteBook = async (request, response) => {
