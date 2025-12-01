@@ -55,7 +55,7 @@ exports.findKos = async(request, response) => {
         })
 
         if (kos.length === 0) {
-            return response.status(200).json({
+            return response.status(404).json({
                 status: false,
                 message: `No data to load`
             })
