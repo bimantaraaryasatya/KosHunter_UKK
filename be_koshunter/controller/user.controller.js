@@ -58,7 +58,12 @@ exports.updateUser = async(request, response) => {
     }
 
     let idUser = request.params.id
-
+    if (idUser !== request.user.id) {
+        return response.status(403).json({
+            status: false,
+            message: 'You are not the owner of this Id'
+        })
+    }
     userModel.update(dataUser, { where: { id: idUser } })
         .then(result => {
             return response.json({

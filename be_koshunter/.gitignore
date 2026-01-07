@@ -25,6 +25,9 @@ Thumbs.db
 *.sqlite
 *.sqlite3
 
+# Sequelize seeders
+seeders/
+
 # Production build files (jika ada build folder)
 build/
 dist/

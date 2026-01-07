@@ -91,6 +91,14 @@ exports.updateKos = async(request, response) => {
                 message: `Kos with id ${idKos} not found`
             })
         }
+
+        if (existingKos.user_id !== request.user.id) {
+            return response.status(403).json({
+                status: false,
+                message: 'You are not the owner of this kos'
+            })
+        }
+
         const oldData = existingKos.get({plain: true})
     
         const isSame = JSON.stringify({
@@ -128,9 +136,14 @@ exports.updateKos = async(request, response) => {
 exports.deleteKos = async(request, response) => {
     try {
         let idKos = request.params.id
-        
+
+        if (request.user.role !== 'admin' &&  request.user.id !== idUser) {
+            return response.status(403).json({
+                status: false,
+                message: 'You do not have access for this action'
+            })
+        }
         const deletedKos = await kosModel.destroy({where: {id: idKos}})
-    
         if (deletedKos === 0) {
             return response.status(404).json({
                 status: false,
