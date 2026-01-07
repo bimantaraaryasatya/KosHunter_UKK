@@ -31,3 +31,5 @@ seeders/
 # Production build files (jika ada build folder)
 build/
 dist/
+
+invoices/

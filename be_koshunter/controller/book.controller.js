@@ -1,9 +1,28 @@
-const { json } = require('sequelize')
-
+const fs = require('fs')
+const path = require('path')
+const PDFDocument = require(`pdfkit`)
 const bookModel = require(`../models/index`).book
 const kosModel = require(`../models/index`).kos
 const userModel = require(`../models/index`).user
 const Op = require('sequelize').Op
+
+const formatRupiah = (number) => {
+    return 'Rp ' + Number(number).toLocaleString('id-ID')
+}
+
+const formatDate = (date) => {
+    return new Date(date).toLocaleDateString('id-ID')
+}
+
+const calculateMonths = (start, end) => {
+    const s = new Date(start)
+    const e = new Date(end)
+    return (
+        (e.getFullYear() - s.getFullYear()) * 12 +
+        (e.getMonth() - s.getMonth()) + 1
+    )
+}
+
 
 exports.getAllBook = async (request, response) => {
     try {
@@ -195,7 +214,10 @@ exports.updateStatusBook = async (request, response) => {
             })
         }
 
-        if (kos.user_id !== request.user.id) {
+        const isAdmin = request.user.role === 'admin'
+        const isOwner = kos.user_id === request.user.id
+
+        if (!isAdmin && !isOwner) {
             return response.status(403).json({
                 status: false,
                 message: 'You are not the owner of this kos'
@@ -204,9 +226,132 @@ exports.updateStatusBook = async (request, response) => {
 
         await bookModel.update({status}, {where: {id: idBook}})
 
+        let invoice = null
+
+        if (status === 'accepted') {
+
+            // ambil booking lengkap
+            const booking = await bookModel.findOne({
+                where: { id: idBook },
+                include: [
+                    { model: kosModel, as: 'kos' },
+                    { model: userModel, as: 'user' }
+                ]
+            })
+
+            const today = new Date()
+            const invoiceNumber = `INV-${today.getTime()}`
+
+        
+            const invoicesDir = path.join(__dirname, '../invoices')
+            if (!fs.existsSync(invoicesDir)) {
+                fs.mkdirSync(invoicesDir, { recursive: true })
+            }
+
+         
+            const fileName = `invoice-${booking.id}.pdf`
+            const filePath = path.join(invoicesDir, fileName)
+
+            const totalMonth = calculateMonths(booking.start_date, booking.end_date)
+            const totalPrice = booking.kos.price_per_month * totalMonth
+
+            const doc = new PDFDocument({ size: 'A4', margin: 40 })
+            doc.pipe(fs.createWriteStream(filePath))
+
+            doc
+                .fontSize(20)
+                .font('Helvetica-Bold')
+                .text('INVOICE BOOKING KOS', { align: 'center' })
+
+            doc.moveDown(0.5)
+            doc
+                .strokeColor('#000')
+                .lineWidth(1)
+                .moveTo(50, doc.y)
+                .lineTo(545, doc.y)
+                .stroke()
+
+            doc.moveDown()
+
+            doc
+                .fontSize(10)
+                .font('Helvetica')
+                .text(`Invoice Number : ${invoiceNumber}`)
+                .text(`Tanggal        : ${formatDate(today)}`)
+
+            doc.moveDown()
+
+            doc
+                .fontSize(12)
+                .font('Helvetica-Bold')
+                .text('Detail Kos')
+
+            doc
+                .fontSize(10)
+                .font('Helvetica')
+                .text(`Nama Kos   : ${booking.kos.name}`)
+                .text(`Alamat     : ${booking.kos.address}`)
+                .text(`Harga/Bln  : ${formatRupiah(booking.kos.price_per_month)}`)
+
+            doc.moveDown()
+
+
+            doc
+                .fontSize(12)
+                .font('Helvetica-Bold')
+                .text('Data Penyewa')
+
+            doc
+                .fontSize(10)
+                .font('Helvetica')
+                .text(`Nama  : ${booking.user.name}`)
+                .text(`Email : ${booking.user.email}`)
+
+            doc.moveDown()
+
+            doc
+                .fontSize(12)
+                .font('Helvetica-Bold')
+                .text('Detail Booking')
+
+            doc
+                .fontSize(10)
+                .font('Helvetica')
+                .text(`Periode    : ${formatDate(booking.start_date)} - ${formatDate(booking.end_date)}`)
+                .text(`Durasi     : ${totalMonth} bulan`)
+                .text(`Total Bayar: ${formatRupiah(totalPrice)}`)
+
+            doc.moveDown(2)
+
+            doc
+                .fontSize(12)
+                .font('Helvetica-Bold')
+                .text(`Status: ACCEPTED`, { align: 'right' })
+
+            doc.moveDown(3)
+
+            doc
+                .fontSize(9)
+                .font('Helvetica-Oblique')
+                .text(
+                    'Invoice ini sah dan digunakan sebagai bukti transaksi. Tidak memerlukan tanda tangan.',
+                    { align: 'center' }
+                )
+
+            invoice = {
+                invoice_number: invoiceNumber,
+                total_month: totalMonth,
+                total_price: totalPrice,
+                file_name: fileName,
+                file_path: `/invoices/${fileName}`
+            }
+            doc.end()
+        }
+
         return response.json({
             status: true,
             data: { status },
+            invoice: invoice,
             message: `Booking status has been updated`
         })
     } catch (error) {
