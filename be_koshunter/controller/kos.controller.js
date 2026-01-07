@@ -43,28 +43,32 @@ exports.createKos = async (request, response) => {
     }
 }
 
-exports.findKos = async(request, response) => {
-    let keyword = request.body.keyword
+exports.findKos = async (request, response) => {
+    const { name, gender } = request.body
+
+    let whereClause = {}
+
+    if (name) {
+        whereClause.name = { [Op.substring]: name }
+    }
+
+    if (gender) {
+        whereClause.gender = gender
+    }
+
     try {
-        let kos = await kosModel.findAll({
-            where: {
-                [Op.or] : [
-                    {name: { [Op.substring]: keyword }}
-                ]
-            }
-        })
+        const kos = await kosModel.findAll({ where: whereClause })
 
         if (kos.length === 0) {
             return response.status(404).json({
                 status: false,
-                message: `No data to load`
+                message: "No data found"
             })
         }
 
         return response.json({
             status: true,
-            data: kos,
-            message: `Kos has been loaded`
+            data: kos
         })
     } catch (error) {
         return response.status(500).json({
