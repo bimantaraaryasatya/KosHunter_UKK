@@ -54,11 +54,13 @@ exports.updateUser = async(request, response) => {
     let dataUser = {
         name: request.body.name,
         email: request.body.email,
-        phone: request.body.phone
+        phone: request.body.phone,
+        role: request.body.role
     }
 
+    const isAdmin = request.user.role === 'admin'
     let idUser = request.params.id
-    if (idUser !== request.user.id) {
+    if (idUser !== request.user.id && !isAdmin) {
         return response.status(403).json({
             status: false,
             message: 'You are not the owner of this Id'

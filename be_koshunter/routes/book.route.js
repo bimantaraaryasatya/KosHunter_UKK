@@ -10,4 +10,6 @@ app.put("/:id", authenticateToken, authorizeRoles('society', 'admin'), bookContr
 app.put("/status/:id", authenticateToken, authorizeRoles('owner', 'admin'), bookController.updateStatusBook)
 app.delete("/:id", authenticateToken, authorizeRoles('society', 'owner', 'admin'), bookController.deleteBook)
 
+app.get("/transaction", authenticateToken, authorizeRoles('owner', 'admin'), bookController.getOwnerTransactionHistory)
+
 module.exports = app

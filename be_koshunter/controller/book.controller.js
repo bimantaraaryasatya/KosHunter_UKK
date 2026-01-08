@@ -29,8 +29,8 @@ exports.getAllBook = async (request, response) => {
     try {
         const books = await bookModel.findAll({
             include: [
-                { model: kosModel }, // nama di response berubah menjadi "ko" !Perhatian
-                { model: userModel }
+                { model: kosModel, as: 'kos' }, // nama di response berubah menjadi "ko" !Perhatian
+                { model: userModel, as: 'user' }
             ],
             order: [['createdAt', 'DESC']]
         })
@@ -412,6 +412,89 @@ exports.deleteBook = async (request, response) => {
             status: true,
             message: `Booking has been deleted`
         })
+    } catch (error) {
+        return response.status(500).json({
+            status: false,
+            message: error.message
+        })
+    }
+}
+
+exports.getOwnerTransactionHistory = async (request, response) => {
+    try {
+        const userId = request.user.id
+        const role = request.user.role
+        const { date, month, year } = request.query
+
+        let whereClause = {
+            status: 'accepted'
+        }
+
+        if (date) {
+            whereClause.createdAt = {
+                [Op.between]: [
+                    new Date(`${date} 00:00:00`),
+                    new Date(`${date} 23:59:59`)
+                ]
+            }
+        }
+
+        if (month && year) {
+            whereClause.createdAt = {
+                [Op.between]: [
+                    new Date(year, month - 1, 1),
+                    new Date(year, month, 0, 23, 59, 59)
+                ]
+            }
+        }
+
+        if (role === 'owner') {
+            const kosList = await kosModel.findAll({
+                where: { user_id: userId },
+                attributes: ['id']
+            })
+
+            if (kosList.length === 0) {
+                return response.status(404).json({
+                    status: false,
+                    message: 'You do not have any kos'
+                })
+            }
+
+            const kosIds = kosList.map(k => k.id)
+            whereClause.kos_id = { [Op.in]: kosIds }
+        }
+
+        const transactions = await bookModel.findAll({
+            where: whereClause,
+            include: [
+                {
+                    model: kosModel,
+                    as: 'kos',
+                    attributes: ['name', 'address', 'price_per_month']
+                },
+                {
+                    model: userModel,
+                    as: 'user',
+                    attributes: ['name', 'email']
+                }
+            ],
+            order: [['createdAt', 'DESC']]
+        })
+
+        if (transactions.length === 0) {
+            return response.status(404).json({
+                status: false,
+                message: 'No transaction history found'
+            })
+        }
+
+        return response.json({
+            status: true,
+            total_transaction: transactions.length,
+            data: transactions
+        })
+
     } catch (error) {
         return response.status(500).json({
             status: false,
