@@ -1,6 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const PDFDocument = require(`pdfkit`)
+const { sequelize } = require('../models/index')
 const bookModel = require(`../models/index`).book
 const kosModel = require(`../models/index`).kos
 const userModel = require(`../models/index`).user
@@ -186,28 +187,40 @@ exports.updateBook = async (request, response) => {
 }
 
 exports.updateStatusBook = async (request, response) => {
+    const t = await sequelize.transaction()
     try {
         let idBook = request.params.id
         const { status } = request.body
 
         if (!['pending', 'accepted', 'rejected'].includes(status)) {
+            await t.rollback()
             return response.status(400).json({
                 status: false,
                 message: 'Invalid status value'
             })
         }
 
-        const existingBook = await bookModel.findOne({where : { id: idBook }})
+        const existingBook = await bookModel.findOne({where : { id: idBook }, transaction: t})
 
         if (!existingBook) {
+            await t.rollback()
             return response.status(404).json({
                 status: false,
                 message: `Booking with this id ${idBook} not found`
             })
         }
 
-        const kos = await kosModel.findOne({where: { id: existingBook.kos_id }})
+        if (existingBook.status === 'accepted') {
+            await t.rollback()
+            return response.status(400).json({
+                status: false,
+                message: 'Booking already accepted'
+            })
+        }
+
+        const kos = await kosModel.findOne({where: { id: existingBook.kos_id }, transaction: t})
         if (!kos) {
+            await t.rollback()
             return response.status(404).json({
                 status: false,
                 message: `Kos with this id ${existingBook.kos_id} not found`
@@ -218,6 +231,7 @@ exports.updateStatusBook = async (request, response) => {
         const isOwner = kos.user_id === request.user.id
 
         if (!isAdmin && !isOwner) {
+            await t.rollback()
             return response.status(403).json({
                 status: false,
                 message: 'You are not the owner of this kos'
@@ -229,6 +243,18 @@ exports.updateStatusBook = async (request, response) => {
         let invoice = null
 
         if (status === 'accepted') {
+
+            if (kos.available_room <= 0) {
+                await t.rollback()
+                return response.status(400).json({
+                    status: false,
+                    message: 'Kos is already full'
+                })
+            }
+
+            await kos.update({
+                available_room: kos.available_room - 1
+            }, { transaction: t })
 
             // ambil booking lengkap
             const booking = await bookModel.findOne({
@@ -348,6 +374,13 @@ exports.updateStatusBook = async (request, response) => {
             doc.end()
         }
 
+        await bookModel.update(
+            { status },
+            { where: { id: idBook }, transaction: t }
+        )
+
+        await t.commit()
+
         return response.json({
             status: true,
             data: { status },
@@ -355,6 +388,7 @@ exports.updateStatusBook = async (request, response) => {
             message: `Booking status has been updated`
         })
     } catch (error) {
+        await t.rollback()
         return response.status(500).json({
             status: false,
             message: error.message

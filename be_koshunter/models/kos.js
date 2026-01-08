@@ -17,6 +17,20 @@ module.exports = (sequelize, DataTypes) => {
     name: DataTypes.STRING,
     address: DataTypes.STRING,
     price_per_month: DataTypes.INTEGER,
+    total_room: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        min: 0
+      }
+    },
+    available_room: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        min: 0
+      }
+    },
     gender: {
       type: DataTypes.ENUM('male', 'female', 'all'),
       allowNull: false,

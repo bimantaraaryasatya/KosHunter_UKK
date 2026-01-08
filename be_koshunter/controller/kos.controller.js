@@ -5,7 +5,12 @@ exports.getAllKos = async(request, response) => {
     try {
         const kos = await kosModel.findAll()
 
-        if (kos.length === 0) {
+        const result = kos.map(k => ({
+            ...k.toJSON(),
+            status: k.available_room === 0 ? 'FULL' : 'AVAILABLE'
+        }))
+
+        if (result.length === 0) {
             return response.status(200).json({
                 status: false,
                 message: `No data to load`
@@ -14,7 +19,7 @@ exports.getAllKos = async(request, response) => {
 
         return response.status(200).json({
             status: true,
-            data: kos,
+            data: result,
             message: 'Kos haven been loaded'
         })
     } catch (error) {
@@ -27,9 +32,9 @@ exports.getAllKos = async(request, response) => {
 
 exports.createKos = async (request, response) => {
     try {
-        const {name, address, price_per_month, gender} = request.body
+        const {name, address, price_per_month, gender, total_room} = request.body
         const idUser = request.user.id
-        const newKos = await kosModel.create({name, user_id: idUser, address, price_per_month, gender})
+        const newKos = await kosModel.create({name, user_id: idUser, address, price_per_month, gender, total_room, available_room: total_room})
         return response.status(200).json({
             status: true,
             data: newKos,
@@ -84,7 +89,9 @@ exports.updateKos = async(request, response) => {
             name: request.body.name,
             address: request.body.address,
             price_per_month: Number(request.body.price_per_month),
-            gender: request.body.gender
+            gender: request.body.gender,
+            total_room: request.body.total_room,
+            available_room: request.body.total_room
         }
     
         let idKos = request.params.id
@@ -96,7 +103,10 @@ exports.updateKos = async(request, response) => {
             })
         }
 
-        if (existingKos.user_id !== request.user.id) {
+        const isAdmin = request.user.role === 'admin'
+        const isOwner = existingKos.user_id === request.user.id
+
+        if (!isAdmin && !isOwner) {
             return response.status(403).json({
                 status: false,
                 message: 'You are not the owner of this kos'
