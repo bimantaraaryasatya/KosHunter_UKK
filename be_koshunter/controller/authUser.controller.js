@@ -5,30 +5,15 @@ const jwt = require(`jsonwebtoken`)
 exports.register = async (request, response) => {
     try {
         const { name, email, password, phone } = request.body
-        const existingUser = await userModel.findOne({ where: { email } })
-        if (request.role === "owner") {
-            if (!existingUser) {
-                return response.status(403).json({
-                    status: false,
-                    message: "You must register as society first"
-                })
-            }
-
-            if (existingUser.role !== "society") {
-                return response.status(403).json({
-                    status: false,
-                    message: "Only society can upgrade to owner"
-                })
-            }
-        }
         const hashedPassword = await bcrypt.hash(password, 10)
-        if (existingUser && request.role === "society") {
+        const existingEmail = await userModel.findOne({where: {email}})
+        if (existingEmail) {
             return response.status(400).json({
                 status: false,
                 message: 'Email already exists'
             })
         }
-        const user = await userModel.create({name, email, password: hashedPassword, phone, role: request.role})
+        const user = await userModel.create({name, email, password: hashedPassword, phone, role: 'society'})
         response.status(201).json({
             status: true, 
             data: user,
@@ -38,6 +23,53 @@ exports.register = async (request, response) => {
         response.status(500).json({
             status: false,
             error: error.message
+        })
+    }
+}
+
+exports.registerOwner = async (request, response) => {
+    try {
+        const { name, email, password, phone } = request.body
+
+        const user = await userModel.findOne({ where: { email } })
+
+        if (!user) {
+            return response.status(404).json({
+                status: false,
+                message: "You must register as society first"
+            })
+        }
+
+        if (user.role !== "society") {
+            return response.status(400).json({
+                status: false,
+                message: "User is already an owner"
+            })
+        }
+
+        const validPassword = await bcrypt.compare(password, user.password)
+        if (!validPassword) {
+            return response.status(401).json({
+                status: false,
+                message: "Invalid credentials"
+            })
+        }
+
+        user.name = name ?? user.name
+        user.phone = phone ?? user.phone
+
+        user.role = "owner"
+        await user.save()
+
+        response.json({
+            status: true,
+            data: user,
+            message: "Successfully registered as owner"
+        })
+    } catch (error) {
+        response.status(500).json({
+            status: false,
+            error: error.message 
         })
     }
 }
