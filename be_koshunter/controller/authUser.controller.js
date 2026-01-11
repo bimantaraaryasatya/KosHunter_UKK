@@ -17,7 +17,7 @@ exports.register = async (request, response) => {
         response.status(201).json({
             status: true, 
             data: user,
-            message: 'Guest registered!'
+            message: 'Guest registered'
         })
     } catch (error) {
         response.status(500).json({
