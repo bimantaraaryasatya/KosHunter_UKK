@@ -88,7 +88,7 @@ exports.login = async (request, response) => {
         if (!user) {
             return response.status(401).json({
                 status: false,
-                error: "Invalid credentials"
+                message: "Invalid credentials"
             })
         }
 
@@ -96,7 +96,7 @@ exports.login = async (request, response) => {
         if (!validPassword) {
             return response.status(401).json({
                 status: false,
-                error: "Invalid credentials"
+                message: "Invalid credentials"
             })
         }
 
