@@ -7,10 +7,17 @@ exports.register = async (request, response) => {
         const { name, email, password, phone } = request.body
         const hashedPassword = await bcrypt.hash(password, 10)
         const existingEmail = await userModel.findOne({where: {email}})
+        const existingPhone = await userModel.findOne({where: {phone}})
         if (existingEmail) {
             return response.status(400).json({
                 status: false,
                 message: 'Email already exists'
+            })
+        }
+        if (existingPhone) {
+            return response.status(400).json({
+                status: false,
+                message: 'One phone number only for one account'
             })
         }
         const user = await userModel.create({name, email, password: hashedPassword, phone, role: 'society'})
