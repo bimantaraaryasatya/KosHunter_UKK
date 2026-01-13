@@ -4,6 +4,7 @@ import { FaRegUser } from "react-icons/fa";
 import { FaUserCheck } from "react-icons/fa";
 import { SlCalender } from "react-icons/sl";
 import { CiCreditCard2 } from "react-icons/ci";
+import { FaBed } from "react-icons/fa";
 
 interface IPropMenu {
    id: string,
@@ -29,7 +30,7 @@ let MenuList: IPropMenu[] = [
         id: `kos`,
         path: `/admin/kos`,
         label: `Kos`,
-        icon: <FaUserCheck/>
+        icon: <FaBed/>
     },
     {
         id: `book`,

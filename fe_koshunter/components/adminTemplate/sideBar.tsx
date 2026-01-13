@@ -63,7 +63,7 @@ const Sidebar = ({ children, id, title, menuList }: ManagerProp) => {
       {/* SIDEBAR */}
       <aside
         className={`
-          fixed top-0 left-0 h-full bg-white border-r
+          fixed top-0 left-0 h-full bg-white border-r border-white
           transition-all duration-300 z-50
           ${isCollapsed ? "w-20" : "w-64"}
         `}
@@ -113,7 +113,7 @@ const Sidebar = ({ children, id, title, menuList }: ManagerProp) => {
         }`}
       >
         {/* HEADER */}
-        <header className="flex justify-between items-center py-4 px-10 border-b bg-white shadow-sm">
+        <header className="sticky top-0 z-50 flex justify-between items-center py-4 px-10 border-b border-[#E8E8E8] bg-white shadow-sm">
             <h1 className="font-bold text-xl text-text">{title}</h1>
 
             <div className="relative">
@@ -152,7 +152,7 @@ const Sidebar = ({ children, id, title, menuList }: ManagerProp) => {
         </header>
 
         {/* PAGE CONTENT */}
-        <main className="p-6">{children}</main>
+        <main className="py-6 px-10">{children}</main>
       </div>
     </div>
   )
