@@ -5,7 +5,7 @@ import { getCookie } from "@/lib/client-cookies";
 import { jwtDecode } from "jwt-decode";
 import { IUser } from "@/app/types";
 
-const adminDashboard = () => {
+const adminBook = () => {
     return(
         <div>
             <p className="text-text">Hi</p>
@@ -13,4 +13,4 @@ const adminDashboard = () => {
     )
 }
 
-export default adminDashboard
+export default adminBook

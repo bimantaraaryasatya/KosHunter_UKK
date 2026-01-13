@@ -5,138 +5,157 @@ import Image from "next/image"
 import MenuItem from "./menuItem"
 import { useRouter } from "next/navigation"
 import { IUser } from "@/app/types"
-import { GiHamburgerMenu } from "react-icons/gi";
-import { IoMdClose } from "react-icons/io";
+import { GiHamburgerMenu } from "react-icons/gi"
+import { FaRegUserCircle } from "react-icons/fa";
+import { IoMdClose } from "react-icons/io"
 import { FaUser } from "react-icons/fa"
-import Logo_SeaSide from "../../public/images/Logo_SeaSide.png"
-import {  getCookie, removeCookie } from "@/lib/client-cookies";
+import Logo_KosHunter from "../../public/images/logo_koshunter.png"
+import { getCookie, removeCookie } from "@/lib/client-cookies"
 import { jwtDecode } from "jwt-decode"
-// Import logo dan profile
+import { ToastContainer, toast } from "react-toastify"
 
 type MenuType = {
-    id: string,
-    icon: ReactNode,
-    path: string,
-    label: string
+  id: string
+  icon: ReactNode
+  path: string
+  label: string
 }
 
 type ManagerProp = {
-    children: ReactNode,
-    id: string,
-    title: string,
-    menuList: MenuType[]
+  children: ReactNode
+  id: string
+  title: string
+  menuList: MenuType[]
 }
 
-const Sidebar = ({children, id, title, menuList}: ManagerProp) => {
-    const [isShow, setIsShow] = useState<boolean>(false)
-    const[isDropdownOpen, setIsDropdownOpen] = useState(false)
-    const [user, setUser] = useState<IUser | null>(null)
-    const router = useRouter()
+const Sidebar = ({ children, id, title, menuList }: ManagerProp) => {
+  const [isCollapsed, setIsCollapsed] = useState(false)
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [user, setUser] = useState<IUser | null>(null)
+  const router = useRouter()
 
-    useEffect(() => {
-    const decodeToken = () => {
-        const TOKEN = getCookie("token");
-        if (!TOKEN) return;
+  useEffect(() => {
+    const TOKEN = getCookie("token")
+    if (!TOKEN) return
 
-        try {
-            const decoded: IUser = jwtDecode(TOKEN); // pastikan struktur IUser sesuai dengan payload JWT
-            console.log("Decoded token payload:", decoded);
-            setUser(decoded);
-        } catch (error) {
-            console.error("Failed to decode token:", error);
-        }
-    };
-    decodeToken();
-}, []);
-
-    const handleLogout = () => {
-        removeCookie("token");
-        removeCookie("id")
-        removeCookie("name")
-        removeCookie("email")
-        removeCookie("phone")
-        removeCookie("role")
-        router.replace(`/user/login`)
+    try {
+      const decoded: IUser = jwtDecode(TOKEN)
+      setUser(decoded)
+    } catch (error) {
+      console.error("Failed to decode token:", error)
     }
-    const toggleDropdown = () => {
-        setIsDropdownOpen (!isDropdownOpen);
-    }
-    return(
-        <div className="w-full min-h-dvh bg-slate-50">
-            {/* Header */}
-            <header className="flex justify-between items-center p-4 mb-0 bg-cyan-500 shadow-md">
-                <div className="flex gap-2">
-                    <button onClick={() => setIsShow(true)}>
-                        <GiHamburgerMenu  className="text-white hover: cursor-pointer"/>
-                    </button>
-                    <h1 className="font-bold text-xl text-white">
-                        {title}
-                    </h1>
-                </div>
+  }, [])
 
-                <div className="relative">
-                    <button onClick={toggleDropdown} className="flex gap-1 items-center space-x-2 text-white hover:cursor-pointer">
-                        <FaUser />
-                        <span className="font-bold">{user?.name}</span>
-                    </button>
+  const handleLogout = () => {
+    removeCookie("token")
+    removeCookie("id")
+    removeCookie("name")
+    removeCookie("email")
+    removeCookie("phone")
+    removeCookie("role")
+    toast("Logout is successful", {hideProgressBar: true, containerId: `toastSideBar`, type: "success", autoClose: 1000})
+    setTimeout(() => router.replace("/login"), 2000)
+  }
 
-                    {isDropdownOpen && (
-                        <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 top-full">
-                            <a className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:cursor-pointer">Profile</a>
-                            <a className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:cursor-pointer">Settings</a>
-                            <a className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:cursor-pointer" onClick={handleLogout}>Log Out</a>
-                        </div>
-                    )}
-                </div>
-            </header>
-            {/* end header */}
-            {/* content section */}
-            <div className="p-4">
-                {children}
-            </div>
-            {/* end content */}
-            {/* sidebar section */}
-            <div className={`flex flex-col w-2/3 md:w-1/2 lg:w-1/4 h-full fixed top-0 right-full transition-transform z-50 bg-white border-r border-cyan-500 ${isShow ? `translate-x-full` : ``}`}>
-                {/* close button */}
-                <div className="ml-auto p-2">
-                    <button onClick={() => setIsShow(false)} className="hover: cursor-pointer">
-                        <IoMdClose className="text-black text-xl"/>
-                    </button>
-                </div>
-                {/* end close button */}
-
-                {/* logo section */}
-                <div className="mb-3 w-full flex justify-center">
-                    <div className="flex items-center space-x-2">
-                        <Image src={Logo_SeaSide} alt="Logo" width={40} height={40}/>
-                        <h1 className="text-2xl font-bold text-cyan-500">Sea Side</h1>
-                    </div>
-                </div>
-                {/* end logo section */}
-
-                {/* user section */}
-                <div className="w-full mt-10 mb-6 bg-cyan-500 text-white p-6 py-4 flex gap-2 items-center">
-                    <div className="text-md font-semibold">
-                        {user?.name || "Admin"}
-                    </div>
-                </div>
-                {/* end user section */}
-
-                {/* menu section */}
-                <div className="w-full py-2 overflow-y">
-                    <div className="flex flex-col gap-2">
-                        {
-                            menuList.map((menu, index) => (
-                                <MenuItem icon={menu.icon} label={menu.label} path={menu.path} active={menu.id === id} key={`keyMenu${index}`}/>
-                            ))
-                        }
-                    </div>
-                </div>
-                {/* end menu section */}
-            </div>
-            {/* end sidebar section */}
+  return (
+    <div className="min-h-screen flex bg-slate-50">
+      <ToastContainer containerId={`toastSideBar`} />
+      {/* SIDEBAR */}
+      <aside
+        className={`
+          fixed top-0 left-0 h-full bg-white border-r
+          transition-all duration-300 z-50
+          ${isCollapsed ? "w-20" : "w-64"}
+        `}
+      >
+        {/* Toggle Button */}
+        <div className={`flex p-4 ${isCollapsed ? 'justify-center' : 'justify-end'}`}>
+          <button className="hover:cursor-pointer" onClick={() => setIsCollapsed(!isCollapsed)}>
+            {isCollapsed ? (
+              <GiHamburgerMenu className="text-xl text-text justify-center" />
+            ) : (
+              <IoMdClose className="text-xl text-text" />
+            )}
+          </button>
         </div>
-    )
+
+        {/* Logo */}
+        <div className="flex items-center justify-center px-4 py-4">
+          <Image src={Logo_KosHunter} alt="Logo" width={100} height={100} />
+        </div>
+
+        {/* User */}
+        {/* <div className="mt-6 px-4">
+          <div className="bg-primary text-white rounded-lg p-3 flex items-center justify-center">
+            {!isCollapsed ? user?.name || "Admin" : <FaUser />}
+          </div>
+        </div> */}
+
+        {/* Menu */}
+        <nav className="mt-6 px-2 flex flex-col gap-2">
+          {menuList.map((menu) => (
+            <MenuItem
+              key={menu.id}
+              icon={menu.icon}
+              label={!isCollapsed ? menu.label : ""}
+              path={menu.path}
+              active={menu.id === id}
+              collapsed={isCollapsed}
+            />
+          ))}
+        </nav>
+      </aside>
+
+      {/* MAIN CONTENT */}
+      <div
+        className={`flex-1 transition-all duration-300 ${
+          isCollapsed ? "ml-20" : "ml-64"
+        }`}
+      >
+        {/* HEADER */}
+        <header className="flex justify-between items-center py-4 px-10 border-b bg-white shadow-sm">
+            <h1 className="font-bold text-xl text-text">{title}</h1>
+
+            <div className="relative">
+                <button
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                className="flex hover:cursor-pointer text-text items-center gap-4 font-medium"
+                >
+                  <span className="text-2xl"><FaRegUserCircle /></span>
+                  <span>{user?.name}</span>
+                </button>
+
+                <div
+                className={`
+                    absolute right-0 mt-2 w-48 bg-white shadow-md rounded-md overflow-hidden
+                    transform transition-all duration-300 ease-in-out
+                    ${
+                    isDropdownOpen
+                        ? "opacity-100 scale-100 translate-y-0"
+                        : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
+                    }
+                `}
+                >
+                    <div className="px-4 py-2 text-text hover:bg-gray-100 cursor-pointer">
+                        Profile
+                    </div>
+                    <div className="px-4 py-2 text-text hover:bg-gray-100 cursor-pointer">
+                        Settings
+                    </div>
+                    <div
+                        onClick={handleLogout}
+                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-red-600">
+                        Logout
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        {/* PAGE CONTENT */}
+        <main className="p-6">{children}</main>
+      </div>
+    </div>
+  )
 }
 
 export default Sidebar
