@@ -1,4 +1,5 @@
 const kosModel = require('../models/index').kos
+const bookModel = require('../models/index').book
 const Op = require('sequelize').Op
 
 exports.getAllKos = async(request, response) => {
@@ -150,13 +151,29 @@ exports.updateKos = async(request, response) => {
 exports.deleteKos = async(request, response) => {
     try {
         let idKos = request.params.id
-
-        if (request.user.role !== 'admin' &&  request.user.id !== idUser) {
+        const existingKos = await kosModel.findOne({where: {id: idKos}})
+        if (!existingKos) {
+            return response.status(404).json({
+                status: false,
+                message: `Kos with id ${idKos} not found`
+            })
+        }
+        if (request.user.role !== 'admin' &&  request.user.id !== existingKos.user_id) {
             return response.status(403).json({
                 status: false,
                 message: 'You do not have access for this action'
             })
         }
+
+        const totalBooking = await bookModel.count({ where: { kos_id: idKos } })
+
+        if (totalBooking > 0) {
+        return response.status(400).json({
+            status: false,
+            message: "Cannot delete kos because it still has active bookings"
+        })
+        }
+
         const deletedKos = await kosModel.destroy({where: {id: idKos}})
         if (deletedKos === 0) {
             return response.status(404).json({
