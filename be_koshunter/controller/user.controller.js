@@ -1,16 +1,42 @@
 const userModel = require(`../models/index`).user
 const Op = require(`sequelize`).Op
+const bcrypt = require(`bcrypt`)
 
-exports.getAllUser = async(request, response) => {
+exports.getAllUser = async (request, response) => {
     try {
-        const users = await userModel.findAll()
+        const { search } = request.query
+
+        const users = await userModel.findAll({
+            where: search
+                ? {
+                    [Op.or]: [
+                        {
+                            name: {
+                                [Op.like]: `%${search}%`
+                            }
+                        },
+                        {
+                            email: {
+                                [Op.like]: `%${search}%`
+                            }
+                        },
+                        {
+                            phone: {
+                                [Op.like]: `%${search}%`
+                            }
+                        }
+                    ]
+                }
+                : undefined
+        })
+
         return response.status(200).json({
             status: true,
             data: users,
-            message: `Users have been loaded`
+            message: "Users have been loaded"
         })
     } catch (error) {
-        return response.status(400).response({
+        return response.status(400).json({
             status: false,
             message: `There is an error. ${error.message}`
         })
@@ -37,6 +63,10 @@ exports.findUser = async(request, response) => {
             })
         }
 
+        if (!keyword) {
+            users = await userModel.findAll()
+        }
+
         return response.json({
             status: true,
             data: users,
@@ -46,6 +76,38 @@ exports.findUser = async(request, response) => {
         return response.status(500).json({
             status: false,
             message: error.message
+        })
+    }
+}
+
+exports.createUser = async(request, response) => {
+    try {
+        const {name, email, password, phone, role} = request.body
+        const hashedPassword = await bcrypt.hash(password, 10)
+        const existingEmail = await userModel.findOne({where: {email}})
+        const existingPhone = await userModel.findOne({where: {phone}})
+        if (existingEmail) {
+            return response.status(400).json({
+                status: false,
+                message: 'Email already exists'
+            })
+        }
+        if (existingPhone) {
+            return response.status(400).json({
+                status: false,
+                message: 'One phone number only for one account'
+            })
+        }
+        const newUser = await userModel.create({name, email, password: hashedPassword, phone, role})
+        response.status(201).json({
+            status: true, 
+            data: newUser,
+            message: 'Guest registered'
+        })
+    } catch (error) {
+        response.status(500).json({
+            status: false,
+            error: error.message
         })
     }
 }
