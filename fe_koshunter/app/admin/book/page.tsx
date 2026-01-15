@@ -58,7 +58,7 @@ export default function BookPage() {
         <div className="bg-white rounded-xl p-5 border-t-4 border-t-primary shadow-md">
             <h4 className="text-xl font-bold mb-2 text-black">Book Data</h4>
             <p className="text-sm text-gray-500 mb-4">
-                Manage all registered users
+                Manage all registered books
             </p>
 
             {/* TOP BAR */}
@@ -88,7 +88,7 @@ export default function BookPage() {
                     <table className="w-full border-collapse">
                         <thead>
                             <tr className="bg-cyan-50 text-left text-sm text-primary">
-                                <th className="p-3">User Name </th>
+                                <th className="p-3">User Email</th>
                                 <th className="p-3">Kos Name</th>
                                 <th className="p-3">Start Date</th>
                                 <th className="p-3">End Date</th>
@@ -103,7 +103,7 @@ export default function BookPage() {
                                     className="border-b border-[#E8E8E8] hover:bg-gray-50 transition"
                                 >
                                     <td className="p-3 font-medium text-gray-800">
-                                        {data.user?.name ?? "-"}
+                                        {data.user?.email ?? "-"}
                                     </td>
                                     <td className="p-3 text-gray-600">
                                         {data.kos?.name ?? "-"}

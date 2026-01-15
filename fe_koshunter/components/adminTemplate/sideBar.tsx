@@ -29,7 +29,7 @@ type ManagerProp = {
 }
 
 const Sidebar = ({ children, id, title, menuList }: ManagerProp) => {
-  const [isCollapsed, setIsCollapsed] = useState(false)
+  const [isCollapsed, setIsCollapsed] = useState(true)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [user, setUser] = useState<IUser | null>(null)
   const router = useRouter()

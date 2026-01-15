@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react"
 import { IKos } from "@/app/types"
 import { getCookie } from "@/lib/client-cookies"
-import { BASE_API_URL } from "@/global"
+import { BASE_API_URL, BASE_IMAGE_KOS} from "@/global"
 import { get } from "@/lib/api-bridge"
+import Image from "next/image"
 import { CiSearch } from "react-icons/ci"
 
 export default function KosPage() {
@@ -82,6 +83,7 @@ export default function KosPage() {
                     <table className="w-full border-collapse">
                         <thead>
                             <tr className="bg-cyan-50 text-left text-sm text-primary">
+                                <th className="p-3">Image</th>
                                 <th className="p-3">Name</th>
                                 <th className="p-3">Address</th>
                                 <th className="p-3">Price/month</th>
@@ -96,6 +98,17 @@ export default function KosPage() {
                                     key={index}
                                     className="border-b border-[#E8E8E8] hover:bg-gray-50 transition"
                                 >
+                                    <td className="p-3">
+                                        {data.kos_images && data.kos_images.length > 0 ? (
+                                            <img
+                                                src={`${BASE_IMAGE_KOS}/${data.kos_images[0].file}`}
+                                                alt={data.name}
+                                                className="h-20 w-20 object-fill rounded-full"
+                                            />
+                                        ) : (
+                                            <span className="text-gray-400 text-sm">No Image</span>
+                                        )}
+                                    </td>
                                     <td className="p-3 font-medium text-gray-800">
                                         {data.name}
                                     </td>

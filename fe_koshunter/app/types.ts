@@ -18,8 +18,15 @@ export interface IKos{
     total_room: number
     available_room: number
     gender: "male" | "female" | "all"
+    kos_images?: IKosImage[]
     createdAt?: string
     updatedAt?: string
+}
+
+interface IKosImage {
+    id: number
+    kos_id: number
+    file: string
 }
 
 export interface IBook{
@@ -31,7 +38,7 @@ export interface IBook{
     status: "pending" | "accepted" | "rejected"
     user?: {
         id: number
-        name: string
+        email: string
     }
     kos?: {
         id: number
