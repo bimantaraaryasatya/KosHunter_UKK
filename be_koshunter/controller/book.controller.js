@@ -94,8 +94,8 @@ exports.findBook = async (request, response) => {
                 ]
             },
             include: [
-                { model: kosModel },
-                { model: userModel }
+                { model: kosModel},
+                { model: userModel}
             ]
         })
 

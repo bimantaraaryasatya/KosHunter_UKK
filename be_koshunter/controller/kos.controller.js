@@ -4,7 +4,25 @@ const Op = require('sequelize').Op
 
 exports.getAllKos = async(request, response) => {
     try {
-        const kos = await kosModel.findAll()
+        const { search } = request.query
+        const kos = await kosModel.findAll({
+            where: search
+                ?{
+                    [Op.or] : [
+                        {
+                            name: {
+                                [Op.like]: `%${search}%`
+                            }
+                        },
+                        {
+                            address: {
+                                [Op.like]: `%${search}%`
+                            }
+                        }
+                    ]
+                }
+                : undefined
+        })
 
         const result = kos.map(k => ({
             ...k.toJSON(),
