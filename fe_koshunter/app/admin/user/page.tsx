@@ -6,6 +6,8 @@ import { getCookie } from "@/lib/client-cookies"
 import { BASE_API_URL } from "@/global"
 import { get } from "@/lib/api-bridge"
 import AddUser from "./addUser"
+import UpdateUser from "./updateUser"
+import DeleteUser from "./deleteUser"
 import { CiSearch } from "react-icons/ci"
 
 export default function UserPage() {
@@ -77,7 +79,7 @@ export default function UserPage() {
                     />
                 </div>
 
-                <AddUser />
+                <AddUser onSuccess={() => setTimeout(() => fetchUsers(), 1000)}/>
             </div>
 
             {/* CONTENT */}
@@ -117,8 +119,9 @@ export default function UserPage() {
                                             {data.role}
                                         </span>
                                     </td>
-                                    <td className="p-3 text-center">
-                                        {/* Action buttons */}
+                                    <td className="p-3 text-center flex gap-4 justify-center">
+                                        <UpdateUser selectedUser={data} onSuccess={() => setTimeout(() => fetchUsers(), 1000)}/>
+                                        <DeleteUser selectedUser={data} onSuccess={() => setTimeout(() => fetchUsers(), 1000)}/>
                                     </td>
                                 </tr>
                             ))}

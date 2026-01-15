@@ -12,7 +12,7 @@ import { InputGroupComponent } from "@/components/inputComponent"
 import Modal from "@/components/modalComponent/index"
 import Select from "@/components/select"
 
-const UpdateUser = ({ selectedUser }: {selectedUser: IUser}) => {
+const UpdateUser = ({ selectedUser, onSuccess }: {selectedUser: IUser, onSuccess: () => void}) => {
     const [isShow, setIsShow] = useState<boolean>(false)
     const [user, setUser] = useState<IUser>({...selectedUser})
     const router = useRouter()
@@ -30,16 +30,17 @@ const UpdateUser = ({ selectedUser }: {selectedUser: IUser}) => {
         try{
             e.preventDefault()
             const url = `${BASE_API_URL}/user/${selectedUser.id}`
-            const {name, email, role} = user
+            const {name, email, phone, role} = user
             const payload = new FormData
             payload.append("name", name || "")
             payload.append("email", email || "")
+            payload.append("phone", phone || "")
             payload.append("role", role || "") 
             const { data } = await put (url, payload, TOKEN)
             if (data?.status) {
                 setIsShow(false)
                 toast(data?.message, {hideProgressBar: true, containerId: `toastMenu`, type: `success`, autoClose: 2000})
-                setTimeout(() => router.refresh(), 1000)
+                onSuccess()
             }else{
                 toast(data?.message, {hideProgressBar: true, containerId: `toastMenu`, type: `warning`, autoClose: 2000})
             }
@@ -63,7 +64,7 @@ const UpdateUser = ({ selectedUser }: {selectedUser: IUser}) => {
                         <div className="w-full flex items-center">
                             <div className="flex flex-col">
                                 <strong className="font-bold text-2xl">Update Guest</strong>
-                                <small className="text-slate-400 text-sm">Update</small>
+                                <small className="text-slate-400 text-sm text-start">Update</small>
                             </div>
                             <div className="ml-auto">
                                 <button type="button" className="text-slate-400" onClick={() => setIsShow(false)}>
@@ -76,16 +77,16 @@ const UpdateUser = ({ selectedUser }: {selectedUser: IUser}) => {
                     </div>
                     {/* end modal header */}
 
-                    {/* modal body */}
-                    <div className="p-5">
+                    {/* modal body */}  
+                    <div className="p-5 text-start text-text">
                         <InputGroupComponent id={`name`} type="text" value={user.name} className="text-black" onChange={val => setUser({ ...user, name:val})} required={true} label="Name"  />
                         <InputGroupComponent id={`email`} type="text" className="text-black" value={user.email} onChange={val => setUser({...user, email:val})} required={true} label="Email"/>
                         <InputGroupComponent id={`phone`} type="text" className="text-black" value={user.phone} onChange={val => setUser({...user, phone:val})} required={true} label="Phone"/>
                         <Select id={`role`} value={user.role} className="text-black" label="Category" required={true} onChange={val => setUser({...user, role:val})}>
                             <option value="">--- Select Role ---</option>
-                            <option value="manager">Manager</option>
+                            <option value="society">Society</option>
+                            <option value="owner">Owner</option>
                             <option value="admin">Admin</option>
-                            <option value="receptionist">Receptionist</option>
                         </Select>
                     </div>
                     {/* end modal body */}

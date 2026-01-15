@@ -14,7 +14,7 @@ import Modal from "@/components/modalComponent"
 import { IoMdClose } from "react-icons/io";
 import Select from "@/components/select"
 
-const AddUser = () => {
+const AddUser = ({onSuccess} : {onSuccess: () => void}) => {
     const [isShow, setIsShow] = useState<boolean>(false)
     const [user, setUser] = useState<IUser>({
         id: 0,
@@ -60,7 +60,7 @@ const AddUser = () => {
             if (data?.status) {
                 setIsShow(false)
                 toast(data?.message, { hideProgressBar: true, containerId: `toastMenu`, type: `success`, autoClose: 2000})
-                setTimeout(() => router.refresh(), 1000)
+                onSuccess()
             }else{
                 toast(data?.message, { hideProgressBar: true, containerId: `toastMenu`, type: `warning`, autoClose: 2000})
             }
