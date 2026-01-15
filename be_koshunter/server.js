@@ -25,6 +25,8 @@ app.use(`/review`, review)
 const book = require(`./routes/book.route`)
 app.use(`/book`, book)
 
+app.use('/kos_images', express.static(path.join(__dirname, 'public/kos_images')));
+
 checkConnection()
   .then(() => {
     app.listen(PORT, () => {

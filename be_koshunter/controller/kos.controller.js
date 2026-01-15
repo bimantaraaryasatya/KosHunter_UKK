@@ -1,5 +1,6 @@
 const kosModel = require('../models/index').kos
 const bookModel = require('../models/index').book
+const kosImageModel = require('../models/index').kos_image
 const Op = require('sequelize').Op
 
 exports.getAllKos = async(request, response) => {
@@ -21,7 +22,12 @@ exports.getAllKos = async(request, response) => {
                         }
                     ]
                 }
-                : undefined
+                : undefined,
+                include: [
+                    {
+                        model: kosImageModel
+                    }
+                ]
         })
 
         const result = kos.map(k => ({
