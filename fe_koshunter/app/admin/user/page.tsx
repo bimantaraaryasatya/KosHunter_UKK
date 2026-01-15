@@ -86,7 +86,7 @@ export default function UserPage() {
             {loading ? (
                 <p className="text-gray-500">Loading...</p>
             ) : users.length === 0 ? (
-                <p className="text-gray-500">Tidak ada data</p>
+                <p className="text-gray-500">No data</p>
             ) : (
                 <div className="hidden md:block overflow-x-auto">
                     <table className="w-full border-collapse">
