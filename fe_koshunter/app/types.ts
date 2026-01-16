@@ -16,7 +16,7 @@ export interface IKos{
     address: string
     price_per_month: number
     total_room: number
-    available_room: number
+    available_room?: number
     gender: "male" | "female" | "all"
     kos_images?: IKosImage[]
     createdAt?: string

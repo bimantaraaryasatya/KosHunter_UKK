@@ -5,7 +5,9 @@ import { IKos } from "@/app/types"
 import { getCookie } from "@/lib/client-cookies"
 import { BASE_API_URL, BASE_IMAGE_KOS} from "@/global"
 import { get } from "@/lib/api-bridge"
-import Image from "next/image"
+import AddKos from "./addKos"
+import UpdateKos from './updateKos'
+import DeleteKos from './deleteKos'
 import { CiSearch } from "react-icons/ci"
 
 export default function KosPage() {
@@ -13,7 +15,7 @@ export default function KosPage() {
     const [keyword, setKeyword] = useState("")
     const [loading, setLoading] = useState(false)
 
-    const fetchUsers = async (search = "") => {
+    const fetchKos = async (search = "") => {
         try {
             setLoading(true)
             const token = getCookie("token")
@@ -38,7 +40,7 @@ export default function KosPage() {
     // debounce search
     useEffect(() => {
         const t = setTimeout(() => {
-            fetchUsers(keyword)
+            fetchKos(keyword)
         }, 400)
 
         return () => clearTimeout(t)
@@ -46,8 +48,14 @@ export default function KosPage() {
 
     // initial load
     useEffect(() => {
-        fetchUsers()
+        fetchKos()
     }, [])
+
+    const GENDER_STYLE: Record<string, string> = {
+        male: "bg-blue-100 text-blue-700",
+        female: "bg-pink-100 text-pink-700",
+        all: "bg-green-100 text-green-700",
+    }
 
     return (
         <div className="bg-white rounded-xl p-5 border-t-4 border-t-primary shadow-md">
@@ -70,7 +78,7 @@ export default function KosPage() {
                     />
                 </div>
 
-                {/* <AddUser onSuccess={() => setTimeout(() => fetchUsers(), 1000)}/> */}
+                <AddKos onSuccess={() => setTimeout(() => fetchKos(), 1000)}/>
             </div>
 
             {/* CONTENT */}
@@ -89,6 +97,7 @@ export default function KosPage() {
                                 <th className="p-3">Price/month</th>
                                 <th className="p-3">Total Room</th> 
                                 <th className="p-3">Available Room</th> 
+                                <th className="p-3">Gender</th> 
                                 <th className="p-3 text-center">Action</th>
                             </tr>
                         </thead>
@@ -128,9 +137,16 @@ export default function KosPage() {
                                             {data.available_room}
                                         </span>
                                     </td>
-                                    <td className="p-3 text-center flex gap-4 justify-center">
-                                        {/* <UpdateUser selectedUser={data} onSuccess={() => setTimeout(() => fetchUsers(), 1000)}/> */}
-                                        {/* <DeleteUser selectedUser={data} onSuccess={() => setTimeout(() => fetchUsers(), 1000)}/> */}
+                                    <td className="p-3">
+                                        <span className={`px-3 py-1 text-xs rounded-full font-semibold ${GENDER_STYLE[data.gender?.toLowerCase() ?? ""] || "bg-gray-100 text-gray-600"}`}>
+                                            {data.gender ?? "-"}
+                                        </span>
+                                    </td>
+                                    <td className="p-3">
+                                        <div className="flex gap-4 justify-center items-center">
+                                            <UpdateKos selectedKos={data} onSuccess={() => setTimeout(() => fetchKos(), 1000)}/>
+                                            <DeleteKos selectedKos={data} onSuccess={() => setTimeout(() => fetchKos(), 1000)}/>
+                                        </div>
                                     </td>
                                 </tr>
                             ))}
