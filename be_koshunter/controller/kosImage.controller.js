@@ -31,6 +31,49 @@ exports.createKosImage = async(request, response) => {
     }
 }
 
+exports.updateKosImage = async (request, response) => {
+    try {
+        const { id } = request.params
+        const file = request.file ? request.file.filename : null
+
+        if (!file) {
+            return response.status(400).json({
+                status: false,
+                message: `Image file is required`
+            })
+        }
+
+        const image = await kosImageModel.findByPk(id)
+
+        if (!image) {
+            return response.status(404).json({
+                status: false,
+                message: `Image with ID ${id} not found`
+            })
+        }
+
+        // hapus file lama
+        const oldImagePath = path.join(__dirname, '..', 'public', 'kos_images', image.file)
+        if (fs.existsSync(oldImagePath)) {
+            fs.unlinkSync(oldImagePath)
+        }
+
+        // update data
+        await image.update({ file })
+
+        return response.status(200).json({
+            status: true,
+            data: image,
+            message: `Image has been updated`
+        })
+    } catch (error) {
+        return response.status(500).json({
+            status: false,
+            message: error.message
+        })
+    }
+}
+
 exports.getAllKosImage = async(request, response) => {
     try {
         const images = await kosImageModel.findAll()
