@@ -1,6 +1,6 @@
 "use client"
 
-import { IKos } from "@/app/types"
+import { IBook } from "@/app/types"
 import { BASE_API_URL } from "@/global"
 import { put } from "@/lib/api-bridge"
 import { getCookie } from "@/lib/client-cookies"
@@ -10,30 +10,18 @@ import { toast } from "react-toastify"
 import { ButtonPrimary, ButtonDanger } from "@/components/buttonComponent"
 import { InputGroupComponent } from "@/components/inputComponent"
 import Modal from "@/components/modalComponent/index"
-import FileInput from "@/components/fileInput/index"
 import Select from "@/components/select"
 
-const UpdateKos = ({ selectedKos, onSuccess }: {selectedKos: IKos, onSuccess: () => void}) => {
+const UpdateUser = ({ selectedBook, onSuccess }: {selectedBook: IBook, onSuccess: () => void}) => {
     const [isShow, setIsShow] = useState<boolean>(false)
-    const [kos, setKos] = useState<IKos>({
-        id: selectedKos.id,
-        user_id: selectedKos.user_id,
-        name: selectedKos.name ?? "",
-        address: selectedKos.address ?? "",
-        price_per_month: selectedKos.price_per_month ?? 0,
-        total_room: selectedKos.total_room ?? 0,
-        available_room: selectedKos.available_room ?? 0,
-        gender: selectedKos.gender ?? "all",
-        kos_images: selectedKos.kos_images ?? [],
-    })
+    const [book, setBook] = useState<IBook>({...selectedBook})
     const router = useRouter()
-    const [file, setFile] = useState<File | null>(null)
     const TOKEN = getCookie("token") || ""
     const formRef = useRef<HTMLFormElement>(null)
 
     const openModal = () => {
-        console.log("Selected Kos ID:", selectedKos.id);
-        // setKos({...selectedKos, password: ""})
+        console.log("Selected User ID:", selectedBook.id);
+        // setBook({...selectedBook, password: ""})
         setIsShow(true)
         if(formRef.current) formRef.current.reset()
     }
@@ -41,26 +29,22 @@ const UpdateKos = ({ selectedKos, onSuccess }: {selectedKos: IKos, onSuccess: ()
     const handleSubmit = async (e: FormEvent) => {
         try{
             e.preventDefault()
-            const url = `${BASE_API_URL}/kos/${selectedKos.id}`
+            const url = `${BASE_API_URL}/book/${selectedBook.id}`
             const payload = new FormData()
-            payload.append("name", kos.name)
-            payload.append("address", kos.address)
-            payload.append("price_per_month", kos.price_per_month.toString())
-            payload.append("total_room", kos.total_room.toString())
-            payload.append("gender", kos.gender)
+            payload.append("kos_id", book.kos_id.toString())
+            payload.append("start_date", book.start_date)
+            payload.append("end_date", book.end_date)
             const { data } = await put(url, payload, TOKEN)
             if (!data?.status) {
                 toast(data?.message, { hideProgressBar: true, containerId: "toastMenu", type: "warning", autoClose: 2000 })
                 return
             }
 
-            const kosImageId = selectedKos.kos_images?.[0]?.id
-            if (file) {
+            const bookID = selectedBook.id
             const imagePayload = new FormData()
-                imagePayload.append("file", file)
+            imagePayload.append("status", book.status)
 
-                await put(`${BASE_API_URL}/kos/image/${kosImageId}`, imagePayload, TOKEN)
-            }
+            await put(`${BASE_API_URL}/book/status/${bookID}`, imagePayload, TOKEN)
 
             if (data?.status) {
                 setIsShow(false)
@@ -105,17 +89,14 @@ const UpdateKos = ({ selectedKos, onSuccess }: {selectedKos: IKos, onSuccess: ()
 
                     {/* modal body */}  
                     <div className="p-5 text-start text-text">
-                        <InputGroupComponent id={`name`} type="text" value={kos.name} onChange={val => setKos({...kos, name: val})} required={true} label="Name"/>
-                        <InputGroupComponent id={`address`} type="text" value={kos.address} onChange={val => setKos({...kos, address: val})} required={true} label="Address"/>
-                        <InputGroupComponent id="price_per_month" type="text" value={kos.price_per_month === 0 ? "" : kos.price_per_month.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")} onChange={val => setKos({ ...kos, price_per_month: Number(val.replace(/\D/g, "")) })} required label="Price/month" />
-                        <InputGroupComponent id={`total_room`} type="number" value={kos.total_room.toString()} onChange={val => setKos({...kos, total_room: Number(val)})} required={true} label="Total Room"/>
-                        <Select id={`gender`} value={kos.gender} className="text-black " label="Category" required={true} onChange={val => setKos({...kos, gender: val as "male" | "female" | "all"})}>
-                            <option value="">--- Select Role ---</option>
-                            <option value="male">Male</option>
-                            <option value="female">Female</option>
-                            <option value="all">All</option>
+                        <InputGroupComponent id={`start_date`} type="date" value={book.start_date} className="text-black" onChange={val => setBook({ ...book, start_date:val})} required={true} label="Start Date"  />
+                        <InputGroupComponent id={`end_date`} type="date" className="text-black" value={book.end_date} onChange={val => setBook({...book, end_date:val})} required={true} label="End Date"/>
+                        <Select id={`status`} value={book.status} className="text-black" label="Status" required={true} onChange={val => setBook({...book, status:val as "pending" | "accepted" | "rejected"})}>
+                            <option value="">--- Select Status ---</option>
+                            <option value="pending">Pending</option>
+                            <option value="rejected">Rejected</option>
+                            <option value="accepted">Accepted</option>
                         </Select>
-                        <FileInput acceptTypes={["application/pdf", "image/png", "image/jpeg", "image/jpg"]} id="kos_images" label="Upload Image (Max 2MB, PDF/JPG/JPEG,PNG)" onChange={f => setFile(f)} required={false}/>
                     </div>
                     {/* end modal body */}
 
@@ -137,4 +118,4 @@ const UpdateKos = ({ selectedKos, onSuccess }: {selectedKos: IKos, onSuccess: ()
     )
 }
 
-export default UpdateKos;
+export default UpdateUser;

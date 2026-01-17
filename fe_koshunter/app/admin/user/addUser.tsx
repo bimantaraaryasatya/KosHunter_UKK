@@ -64,9 +64,10 @@ const AddUser = ({onSuccess} : {onSuccess: () => void}) => {
             }else{
                 toast(data?.message, { hideProgressBar: true, containerId: `toastMenu`, type: `warning`, autoClose: 2000})
             }
-        } catch (error) {
-            console.log(error);
-            toast(`Something Wrong`, { hideProgressBar: true, containerId: `toastMenu`, type: `error`, autoClose: 2000})
+        } catch (error: any) {
+            console.log(error)
+            const message = error?.response?.data?.message || "Something went wrong"
+            toast(message, {hideProgressBar: true, containerId: `toastRegister`, type: "error", autoClose: 2000})
         }
     }
 

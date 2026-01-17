@@ -44,9 +44,10 @@ const UpdateUser = ({ selectedUser, onSuccess }: {selectedUser: IUser, onSuccess
             }else{
                 toast(data?.message, {hideProgressBar: true, containerId: `toastMenu`, type: `warning`, autoClose: 2000})
             }
-        } catch (error){
+        } catch (error: any){
             console.log(error)
-            toast(`Something Wrong`, { hideProgressBar: true, containerId: `toastMenu`, type: `error`, autoClose: 2000})
+            const message = error?.response?.data?.message || "Something went wrong"
+            toast(message, {hideProgressBar: true, containerId: `toastRegister`, type: "error", autoClose: 2000})
         }
     }
 

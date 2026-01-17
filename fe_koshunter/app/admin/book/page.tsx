@@ -6,6 +6,9 @@ import { getCookie } from "@/lib/client-cookies"
 import { BASE_API_URL } from "@/global"
 import { get } from "@/lib/api-bridge"
 import { CiSearch } from "react-icons/ci"
+import AddBook from "./addBook"
+import DeleteBook from "./deleteBook"
+import UpdateBook from "./updateBook"
 
 export default function BookPage() {
     const [books, setBooks] = useState<IBook[]>([])
@@ -75,7 +78,7 @@ export default function BookPage() {
                     />
                 </div>
 
-                {/* <AddUser onSuccess={() => setTimeout(() => fetchUsers(), 1000)}/>  */}
+                <AddBook onSuccess={() => setTimeout(() => fetchUsers(), 1000)}/> 
             </div>
 
             {/* CONTENT */}
@@ -120,8 +123,8 @@ export default function BookPage() {
                                         </span>
                                     </td>
                                     <td className="p-3 text-center flex gap-4 justify-center">
-                                        {/* <UpdateUser selectedUser={data} onSuccess={() => setTimeout(() => fetchUsers(), 1000)}/> */}
-                                        {/* <DeleteUser selectedUser={data} onSuccess={() => setTimeout(() => fetchUsers(), 1000)}/> */}
+                                        <UpdateBook selectedBook={data} onSuccess={() => setTimeout(() => fetchUsers(), 1000)}/>
+                                        <DeleteBook selectedBook={data} onSuccess={() => setTimeout(() => fetchUsers(), 1000)}/>
                                     </td>
                                 </tr>
                             ))}
