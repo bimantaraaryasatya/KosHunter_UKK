@@ -16,25 +16,25 @@ interface IPropMenu {
 let MenuList: IPropMenu[] = [
     {
         id: `dashboard`,
-        path: `/admin/dashboard`,
+        path: `/owner/dashboard`,
         label: `Dashboard`,
         icon: <FaHome />
     },
     {
         id: `kos`,
-        path: `/admin/kos`,
+        path: `/owner/kos`,
         label: `Kos`,
         icon: <FaBed/>
     },
     {
         id: `book`,
-        path: `/admin/book`,
+        path: `/owner/book`,
         label: `Book`,
         icon: <SlCalender/>
     },
     {
         id: `transaction`,
-        path: `/admin/transaction`,
+        path: `/owner/transaction`,
         label: `Transaction`,
         icon: <CiCreditCard2/>
     }
