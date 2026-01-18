@@ -397,28 +397,63 @@ exports.updateStatusBook = async (request, response) => {
 }
 
 exports.deleteBook = async (request, response) => {
+    const t = await sequelize.transaction()
     try {
-        let idBook = request.params.id
+        const idBook = request.params.id
 
-        const deletedBook = await bookModel.destroy({where: {id: idBook}})
-        if (deletedBook === 0) {
+        const booking = await bookModel.findOne({
+            where: { id: idBook },
+            transaction: t
+        })
+
+        if (!booking) {
+            await t.rollback()
             return response.status(404).json({
                 status: false,
                 message: `Booking with this id ${idBook} not found`
             })
         }
 
+        const kos = await kosModel.findOne({
+            where: { id: booking.kos_id },
+            transaction: t
+        })
+
+        if (!kos) {
+            await t.rollback()
+            return response.status(404).json({
+                status: false,
+                message: `Kos with this id ${booking.kos_id} not found`
+            })
+        }
+
+        if (booking.status === 'accepted') {
+            await kos.update(
+                { available_room: kos.available_room + 1 },
+                { transaction: t }
+            )
+        }
+
+        await bookModel.destroy({
+            where: { id: idBook },
+            transaction: t
+        })
+
+        await t.commit()
+
         return response.status(200).json({
             status: true,
-            message: `Booking has been deleted`
+            message: `Booking has been deleted and room restored`
         })
     } catch (error) {
+        await t.rollback()
         return response.status(500).json({
             status: false,
             message: error.message
         })
     }
 }
+
 
 exports.getOwnerTransactionHistory = async (request, response) => {
     try {
