@@ -44,7 +44,12 @@ const UpdateUser = ({ selectedBook, onSuccess }: {selectedBook: IBook, onSuccess
             const imagePayload = new FormData()
             imagePayload.append("status", book.status)
 
-            await put(`${BASE_API_URL}/book/status/${bookID}`, imagePayload, TOKEN)
+            const statusRes = await put(`${BASE_API_URL}/book/status/${bookID}`, imagePayload, TOKEN)
+
+            if (!statusRes.data?.status) {
+                toast(statusRes.data.message, { hideProgressBar: true, containerId: "toastMenu", type: "warning", autoClose: 2000})
+                return
+            }
 
             if (data?.status) {
                 setIsShow(false)
@@ -56,7 +61,7 @@ const UpdateUser = ({ selectedBook, onSuccess }: {selectedBook: IBook, onSuccess
         } catch (error: any){
             console.log(error)
             const message = error?.response?.data?.message || "Something went wrong"
-            toast(message, {hideProgressBar: true, containerId: `toastRegister`, type: "error", autoClose: 2000})
+            toast(message, {hideProgressBar: true, containerId: `toastMenu`, type: "error", autoClose: 2000})
         }
     }
 

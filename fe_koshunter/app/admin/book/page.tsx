@@ -54,7 +54,7 @@ export default function BookPage() {
     const STATUS_STYLE: Record<string, string> = {
     pending: "bg-red-100 text-yellow-600",
     accepted: "bg-cyan-100 text-green-600",
-    rejected: "bg-green-100 text-red-600",
+    rejected: "bg-red-100 text-red-600",
     }
 
     return (
