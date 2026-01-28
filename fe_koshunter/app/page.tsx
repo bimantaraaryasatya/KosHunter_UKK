@@ -1,49 +1,32 @@
 import Image from "next/image";
-import Logo from '@/public/images/logo_koshunter.png'
 import IndexImage from '@/public/images/index_image.png'
-import { BASE_FRONT_END_URL } from "@/global";
+import Logo from '@/public/images/logo_koshunter.png'
+import Header from "@/components/navbar";
 
 export default function IndexPage() {
   return (
     <div>
-      <header>
-        <div>
-          <Image src={Logo} alt="kos hunter logo" width={60} height={60} />
-        </div>
-        <div>
-          <div>
-            <ul>
-              <li>Find Kos</li>
-              <li>Help Center</li>
-              <li>Profile</li>
-            </ul>
-          </div>
-
-          <div>
-            <div>
-              <a href={`${BASE_FRONT_END_URL}/login`}>Login</a>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header/>
 
       {/* First Page */}
-      <main>
-        <div>
-          <div>
-            <h4>Kos Hunter</h4>
+      <main className="px-40 py-4">
+        <div className="flex justify-between">
+          <div className="flex flex-col justify-center gap-2">
+            <div>
+              <h4 className="text-xl font-semibold text-primary">Kos Hunter</h4>
+            </div>
+            <div className="flex flex-col gap-3">
+              <h1 className="text-7xl  font-bold">Find Your Kos <br /> Now</h1>
+              <h4>Kos Hunter helps you find the perfect boarding house quickly and easily, <br /> anytime and anywhere</h4>
+            </div>
+            <div className="mt-4">
+              <a href="/kos" className="bg-primary border-2 border-primary text-white px-16 py-4 rounded-md hover:bg-transparent hover:text-primary transition-all ease-in-out duration-300">Find Kos</a>
+            </div>
           </div>
-          <div>
-            <h1>Find Your Kos Now</h1>
-            <h4>Kos Hunter helps you find the perfect boarding house quickly and easily, anytime and anywhere</h4>
-          </div>
-          <div>
-            <a href="">Find Kos</a>
-          </div>
-        </div>
 
-        <div>
-          <Image src={IndexImage} width={60} height={60} alt="index image"/>
+          <div>
+            <Image src={IndexImage} width={650} height={650} alt="index image"/>
+          </div>
         </div>
       </main>
 
