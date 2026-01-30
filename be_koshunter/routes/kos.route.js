@@ -8,7 +8,8 @@ const app = express()
 const multer = require("multer")
 const upload = multer()
 
-app.get("/", authenticateToken, kosController.getAllKos)
+app.get("/", kosController.getAllKos)
+app.get("/my", authenticateToken, authorizeRoles('owner'), kosController.getMyKos)
 app.post("/find", authenticateToken, kosController.findKos)
 app.post("/", authenticateToken, authorizeRoles('owner', 'admin'), upload.none(), kosController.createKos)
 app.put("/:id", authenticateToken, authorizeRoles('owner', 'admin'), upload.none(), kosController.updateKos)
@@ -20,8 +21,8 @@ app.delete("/facility/:id", authenticateToken, authorizeRoles('owner', 'admin'),
 
 app.post("/image", authenticateToken, authorizeRoles('owner', 'admin'), uploadFile.single('file'), kosImageController.createKosImage)
 app.put("/image/:id", authenticateToken, authorizeRoles('owner', 'admin'), uploadFile.single('file'), kosImageController.updateKosImage)
-app.get("/image", authenticateToken, kosImageController.getAllKosImage)
-app.get("/image/:kos_id", authenticateToken, kosImageController.getKosImageByKosId)
+app.get("/image", kosImageController.getAllKosImage)
+app.get("/image/:kos_id", kosImageController.getKosImageByKosId)
 app.delete("/image/:id", authenticateToken, authorizeRoles('owner', 'admin'), kosImageController.deleteKosImage)
 
 module.exports = app

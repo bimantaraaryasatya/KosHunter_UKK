@@ -73,6 +73,41 @@ exports.createKos = async (request, response) => {
     }
 }
 
+exports.getMyKos = async (request, response) => {
+    try {
+        const userId = request.user.id
+
+        const kos = await kosModel.findAll({
+            where: {
+                user_id: userId
+            },
+            include: [
+                {
+                    model: kosImageModel
+                }
+            ]
+        })
+
+        const result = kos.map(k => ({
+            ...k.toJSON(),
+            status: k.available_room === 0 ? 'FULL' : 'AVAILABLE'
+        }))
+
+        return response.status(200).json({
+            status: true,
+            data: result,
+            message: result.length === 0
+                ? 'User has no kos yet'
+                : 'User kos loaded'
+        })
+    } catch (error) {
+        return response.status(500).json({
+            status: false,
+            message: error.message
+        })
+    }
+}
+
 exports.findKos = async (request, response) => {
     const { name, gender } = request.body
 
@@ -108,69 +143,35 @@ exports.findKos = async (request, response) => {
     }
 }
 
-exports.updateKos = async(request, response) => {
+exports.updateKos = async (request, response) => {
     try {
-        let dataKos = {
-            name: request.body.name,
-            address: request.body.address,
-            price_per_month: Number(request.body.price_per_month),
-            gender: request.body.gender,
-            total_room: request.body.total_room,
-            available_room: request.body.total_room
-        }
-    
-        let idKos = request.params.id
-        const existingKos = await kosModel.findOne({where: {id: idKos}})
-        if (!existingKos) {
-            return response.status(404).json({
-                status: false,
-                message: `Kos with id ${idKos} not found`
-            })
+        const kosId = request.params.id;
+        const { name, address, price_per_month, total_room, gender } = request.body;
+
+        const kos = await kosModel.findOne({ where: { id: kosId } });
+        if (!kos) return response.status(404).json({ status: false, message: "Kos not found" });
+
+        if (kos.user_id !== request.user.id) return response.status(403).json({ status: false, message: "Not owner" });
+
+        // hitung booking accepted
+        const acceptedBookingCount = await bookModel.count({ where: { kos_id: kosId, status: 'accepted' } });
+
+        if (total_room < acceptedBookingCount) {
+            return response.status(400).json({ status: false, message: `Total room cannot be less than accepted bookings (${acceptedBookingCount})` });
         }
 
-        const isAdmin = request.user.role === 'admin'
-        const isOwner = existingKos.user_id === request.user.id
+        const available_room = total_room - acceptedBookingCount;
 
-        if (!isAdmin && !isOwner) {
-            return response.status(403).json({
-                status: false,
-                message: 'You are not the owner of this kos'
-            })
-        }
+        await kos.update({ name, address, price_per_month, total_room, available_room, gender });
 
-        const oldData = existingKos.get({plain: true})
-    
-        const isSame = JSON.stringify({
-            name: oldData.name,
-            address: oldData.address,
-            price_per_month: oldData.price_per_month,
-            gender: oldData.gender
-        }) === JSON.stringify(dataKos);
-        
-        console.log("OLD DATA:", oldData);
-        console.log("NEW DATA:", dataKos);
-
-        if (isSame) {
-            return response.status(400).json({
-                status: false,
-                message: "No changes detected. Data is the same as before."
-            });
-        }
-    
-        await kosModel.update(dataKos, { where: { id: idKos } })
-        
-        return response.json({
-            status: true,
-            data: dataKos,
-            message: `Data kos has been updated`
-        })
-    } catch (error) {
-        return response.status(500).json({
-            status: false,
-            message: error.message
-        })
+        return response.json({ status: true, message: "Kos updated successfully", data: kos });
+    } catch (err) {
+        console.log(err);
+        return response.status(500).json({ status: false, message: err.message });
     }
-}
+};
+
+
 
 exports.deleteKos = async(request, response) => {
     try {

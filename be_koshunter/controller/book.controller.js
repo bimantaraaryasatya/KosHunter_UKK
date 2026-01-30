@@ -55,6 +55,62 @@ exports.getAllBook = async (request, response) => {
     }
 }
 
+exports.getMyBook = async (request, response) => {
+    try {
+        const ownerId = request.user.id
+
+        // ambil semua booking dari kos milik owner
+        const books = await bookModel.findAll({
+            include: [
+                {
+                    model: kosModel,
+                    as: 'kos',
+                    where: {
+                        user_id: ownerId
+                    }
+                },
+                {
+                    model: userModel,
+                    as: 'user',
+                    attributes: ['id', 'name', 'email']
+                }
+            ],
+            order: [['createdAt', 'DESC']]
+        })
+
+        if (books.length === 0) {
+            return response.status(200).json({
+                status: true,
+                data: [],
+                message: 'No booking found for your kos'
+            })
+        }
+
+        const result = books.map(b => {
+            const totalMonth = calculateMonths(b.start_date, b.end_date)
+            const totalPrice = b.kos.price_per_month * totalMonth
+
+            return {
+                ...b.toJSON(),
+                total_month: totalMonth,
+                total_price: totalPrice
+            }
+        })
+
+        return response.status(200).json({
+            status: true,
+            data: result,
+            message: 'Bookings for owner kos loaded'
+        })
+
+    } catch (error) {
+        return response.status(500).json({
+            status: false,
+            message: error.message
+        })
+    }
+}
+
 exports.createBook = async (request, response) => {
     try {
         const { kos_id, start_date, end_date } = request.body

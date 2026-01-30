@@ -6,6 +6,7 @@ const multer = require("multer")
 const upload = multer()
 
 app.get("/", authenticateToken, authorizeRoles('society', 'owner', 'admin'), bookController.getAllBook)
+app.get("/my", authenticateToken, authorizeRoles('owner'), bookController.getMyBook)
 app.post("/", authenticateToken, authorizeRoles('society', 'admin'), upload.none(), bookController.createBook)
 app.post("/find", authenticateToken, authorizeRoles('society', 'owner', 'admin'), bookController.findBook)
 app.put("/:id", authenticateToken, authorizeRoles('society', 'admin'), upload.none(), bookController.updateBook)

@@ -1,5 +1,54 @@
 const reviewModel = require('../models/index').review
 const userModel = require('../models/index').user
+const kosModel = require('../models/index').kos
+
+exports.getAllReview = async (request, response) => {
+    try {
+        const reviews = await reviewModel.findAll({
+            where: { parent_id: null }, // hanya review utama
+            include: [
+                {
+                    model: kosModel,
+                    as: 'kos',
+                    attributes: ['id', 'name', 'address'] // sesuaikan field kos
+                },
+                {
+                    model: userModel,
+                    attributes: ['id', 'name', 'role']
+                },
+                {
+                    model: reviewModel,
+                    as: 'replies',
+                    include: [
+                        {
+                            model: userModel,
+                            attributes: ['id', 'name', 'role']
+                        }
+                    ]
+                }
+            ],
+            order: [['createdAt', 'DESC']]
+        })
+
+        if (reviews.length === 0) {
+            return response.status(200).json({
+                status: false,
+                message: 'No reviews found'
+            })
+        }
+
+        return response.status(200).json({
+            status: true,
+            data: reviews,
+            message: 'All reviews loaded successfully'
+        })
+    } catch (error) {
+        return response.status(500).json({
+            status: false,
+            message: error.message
+        })
+    }
+}
 
 exports.createReview = async (request, response) => {
     try {
