@@ -1,4 +1,3 @@
-import AdminTemplate from "@/components/adminTemplate";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -12,9 +11,7 @@ type PropsLayout = {
 
 const RootLayout = ({ children }: PropsLayout) => {
    return(
-      <>
-         {children}
-      </>
+        {children}
    )
 }
 

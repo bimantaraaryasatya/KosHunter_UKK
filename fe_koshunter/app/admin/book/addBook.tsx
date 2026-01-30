@@ -77,7 +77,7 @@ const AddBook = ({onSuccess} : {onSuccess: () => void}) => {
             <ButtonSuccess type="button" onClick={() => openModal()}>
                 <div className="flex items-center gap-2">
                     <FaPlus />
-                    Add User
+                    Add Book
                 </div>
             </ButtonSuccess>
             <Modal isShow={isShow} onClose={state => setIsShow(state)}>

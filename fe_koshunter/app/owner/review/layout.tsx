@@ -1,10 +1,10 @@
 import AdminTemplate from "@/components/adminTemplate";
-import type { Metadata } from "next";
+import MenuList from "../menuList";
 
-export const metadata: Metadata = {
-  title: "Kos Hunter: Find Your Own Kos",
-  description: "Kos Hunter",
-};
+export const metadata = {
+   title: 'Dashboard Owner | Kos Hunter',
+   description: 'Kos Hunter'
+}
 
 type PropsLayout = {
    children: React.ReactNode
@@ -12,9 +12,9 @@ type PropsLayout = {
 
 const RootLayout = ({ children }: PropsLayout) => {
    return(
-      <>
+      <AdminTemplate title="Review" id="review" menuList={MenuList}>
          {children}
-      </>
+      </AdminTemplate>
    )
 }
 

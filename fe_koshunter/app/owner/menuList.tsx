@@ -1,10 +1,9 @@
 import { ReactNode } from "react";
 import { FaHome } from "react-icons/fa";
-import { FaRegUser } from "react-icons/fa";
-import { FaUserCheck } from "react-icons/fa";
 import { SlCalender } from "react-icons/sl";
 import { CiCreditCard2 } from "react-icons/ci";
 import { FaBed } from "react-icons/fa";
+import { FaComment } from "react-icons/fa";
 
 interface IPropMenu {
    id: string,
@@ -31,6 +30,12 @@ let MenuList: IPropMenu[] = [
         path: `/owner/book`,
         label: `Book`,
         icon: <SlCalender/>
+    },
+     {
+        id: `review`,
+        path: '/owner/review',
+        label: 'Review',
+        icon: <FaComment/>
     },
     {
         id: `transaction`,

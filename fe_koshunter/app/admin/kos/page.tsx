@@ -91,6 +91,7 @@ export default function KosPage() {
                     <table className="w-full border-collapse">
                         <thead>
                             <tr className="bg-cyan-50 text-left text-sm text-primary">
+                                <th className="p-3">Id</th>
                                 <th className="p-3">Image</th>
                                 <th className="p-3">Name</th>
                                 <th className="p-3">Address</th>
@@ -106,7 +107,10 @@ export default function KosPage() {
                                 <tr
                                     key={index}
                                     className="border-b border-[#E8E8E8] hover:bg-gray-50 transition"
-                                >
+                                >   
+                                    <td className="p-3">
+                                        {data.id}
+                                    </td>
                                     <td className="p-3">
                                         {data.kos_images && data.kos_images.length > 0 ? (
                                             <img

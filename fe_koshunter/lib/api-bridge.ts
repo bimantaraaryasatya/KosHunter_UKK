@@ -6,7 +6,7 @@ const axiosInstance = axios.create({
     baseURL: BASE_API_URL
 })
 
-export const get = async (url: string, token: string) => {
+export const get = async (url: string, token?: string) => {
     try{
         let headers: any = {
             "Authorization": `Bearer ${token}` || '',

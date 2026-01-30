@@ -45,3 +45,14 @@ export interface IBook{
         name: string
     }
 }
+
+export interface IReview {
+    id: number
+    kos_id: number
+    user_id: number
+    comment: string
+    parent_id: number | null
+    user: IUser
+    kos: IKos
+    replies?: IReview[]
+}
