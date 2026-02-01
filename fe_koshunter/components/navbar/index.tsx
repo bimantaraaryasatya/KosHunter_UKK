@@ -1,25 +1,59 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Logo from "@/public/images/logo_koshunter.png";
 import Image from "next/image";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
+import { Menu, X, User, LogOut, ChevronDown } from "lucide-react";
+import { getCookie, removeCookie } from "@/lib/client-cookies";
+import { useRouter } from "next/navigation";
 
 const Header = () => {
   const [open, setOpen] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [isLogin, setIsLogin] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+
   const menus = [
     { label: "Find Kos", href: "/kos" },
     { label: "Help Center", href: "/help" },
-    { label: "Profile", href: "/profile" },
   ];
 
+  useEffect(() => {
+    const token = getCookie("token");
+    setIsLogin(!!token);
+  }, []);
+
+  // close dropdown when click outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
+        setShowDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleLogout = () => {
+    removeCookie("token");
+    setShowDropdown(false);
+    setIsLogin(false);
+    router.push("/login");
+  };
 
   return (
-    <header className="border-b border-[#E8E8E8] sticky top-0 z-50 bg-white px-6 md:px-20 lg:px-20 py-4">
+    <header className="border-b border-[#E8E8E8] sticky top-0 z-50 bg-white px-6 md:px-20 py-4">
       <div className="flex justify-between items-center">
         {/* Logo */}
-        <a href="/"><Image src={Logo} alt="kos hunter logo" width={150} height={150} /></a>
+        <Link href="/">
+          <Image src={Logo} alt="kos hunter logo" width={150} height={150} />
+        </Link>
 
         {/* Desktop Menu */}
         <div className="hidden md:flex gap-16 items-center">
@@ -36,15 +70,50 @@ const Header = () => {
             ))}
           </ul>
 
-          <Link
-            href="/login"
-            className="border rounded-sm py-2 px-8 text-primary border-primary hover:bg-primary hover:text-white transition-all duration-300 tracking-wider"
-          >
-            Login
-          </Link>
+          {/* AUTH AREA */}
+          {!isLogin ? (
+            <Link
+              href="/login"
+              className="border rounded-sm py-2 px-8 text-primary border-primary hover:bg-primary hover:text-white transition-all duration-300 tracking-wider"
+            >
+              Login
+            </Link>
+          ) : (
+            <div className="relative text-primary" ref={dropdownRef}>
+              <button
+                onClick={() => setShowDropdown(!showDropdown)}
+                className="flex items-center gap-2 border-transparent shadow-md border-2 px-2 py-2 rounded-full hover:bg-gray-100 transition"
+              >
+                <User size={18} />
+                <ChevronDown size={16} />
+              </button>
+
+              {/* DROPDOWN */}
+              {showDropdown && (
+                <div className="absolute right-0 mt-3 w-44 bg-white border-transparent rounded-lg shadow-lg overflow-hidden">
+                  <Link
+                    href="/profile"
+                    className="flex items-center gap-2 px-4 py-3 text-sm hover:bg-gray-100"
+                    onClick={() => setShowDropdown(false)}
+                  >
+                    <User size={16} />
+                    Profile
+                  </Link>
+
+                  <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center gap-2 px-4 py-3 text-sm text-red-500 hover:bg-red-50"
+                  >
+                    <LogOut size={16} />
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
-        {/* Burger Button */}
+        {/* Burger */}
         <button
           className="md:hidden text-primary"
           onClick={() => setOpen(!open)}
@@ -55,19 +124,36 @@ const Header = () => {
 
       {/* Mobile Menu */}
       {open && (
-        <div className="md:hidden absolute top-full left-0 w-full bg-white border-[#E8E8E8] border-t shadow-md p-6">
+        <div className="md:hidden absolute top-full left-0 w-full bg-white border-t shadow-md p-6">
           <ul className="flex flex-col gap-6 font-medium tracking-wider">
-            <li><a href="#">Find Kos</a></li>
-            <li><a href="#">Help Center</a></li>
-            <li><a href="#">Profile</a></li>
-            <li>
-              <a
-                href='/login'
-                className="inline-block border rounded-sm py-2 px-6 text-primary border-primary hover:bg-primary hover:text-white transition-all duration-300"
-              >
-                Login
-              </a>
-            </li>
+            <li><Link href="/kos">Find Kos</Link></li>
+            <li><Link href="/help">Help Center</Link></li>
+
+            {!isLogin ? (
+              <li>
+                <Link
+                  href="/login"
+                  className="inline-block border rounded-sm py-2 px-6 text-primary border-primary"
+                >
+                  Login
+                </Link>
+              </li>
+            ) : (
+              <>
+                <li>
+                  <Link href="/profile">Profile</Link>
+                </li>
+                <li>
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-2 text-red-500"
+                  >
+                    <LogOut size={18} />
+                    Logout
+                  </button>
+                </li>
+              </>
+            )}
           </ul>
         </div>
       )}

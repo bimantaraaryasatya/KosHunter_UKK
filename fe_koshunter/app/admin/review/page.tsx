@@ -5,8 +5,9 @@ import { IReview } from "@/app/types"
 import { getCookie } from "@/lib/client-cookies"
 import { BASE_API_URL } from "@/global"
 import { get } from "@/lib/api-bridge"
-// import AddReview from "./addReview"
+import AddReview from "./addReview"
 // import ReplyReview from "./replyReview"
+import DeleteReview from "./deleteReview"
 
 export default function ReviewPage({ kosId }: { kosId: number }) {
     const [reviews, setReviews] = useState<IReview[]>([])
@@ -40,19 +41,33 @@ export default function ReviewPage({ kosId }: { kosId: number }) {
         fetchReviews()
     }, [])
 
+    const ROLE_STYLE: Record<string, string> = {
+        admin: "bg-red-100 text-red-600",
+        owner: "bg-cyan-100 text-cyan-600",
+        society: "bg-green-100 text-green-600",
+        user: "bg-blue-100 text-blue-600"
+    }
+
     return (
         <div className="bg-white rounded-xl p-5 border-t-4 border-t-primary shadow-md">
-            <h4 className="text-xl font-bold mb-2 text-black">
-                Review Kos
-            </h4>
-            <p className="text-sm text-gray-500 mb-4">
-                Review & balasan pemilik kos
-            </p>
+            <div className="flex justify-between">
+                <div>
+                    <h4 className="text-xl font-bold mb-2 text-black">
+                        Review Kos
+                    </h4>
+                    <p className="text-sm text-gray-500 mb-4">
+                        Review & balasan pemilik kos
+                    </p>
+                </div>
+                <div className="flex items-center">
+                    <AddReview onSuccess={() => fetchReviews()}/>
+                </div>
+            </div>
 
             {/* TOP BAR */}
-            <div className="flex justify-end mb-4">
-                {/* <AddReview onSuccess={() => fetchReviews()} kosId={kosId} /> */}
-            </div>
+            {/* <div className="flex justify-end mb-4">
+                <AddReview onSuccess={() => fetchReviews()}/>
+            </div> */}
 
             {/* CONTENT */}
             {loading ? (
@@ -68,7 +83,7 @@ export default function ReviewPage({ kosId }: { kosId: number }) {
                                 <th className="p-3">Kos Name</th>
                                 <th className="p-3">Comment</th>
                                 <th className="p-3">Role</th>
-                                <th className="p-3 text-center">Reply</th>
+                                <th className="p-3 text-center">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -90,13 +105,13 @@ export default function ReviewPage({ kosId }: { kosId: number }) {
                                     </td>
 
                                     <td className="p-3">
-                                        <span className="px-3 py-1 text-xs rounded-full bg-gray-100 text-gray-600">
+                                        <span className={`px-3 py-1 text-xs rounded-full font-semibold ${ROLE_STYLE[review.user.role.toLowerCase()] || "bg-gray-100 text-gray-600"}`}>
                                             {review.user.role}
                                         </span>
                                     </td>
 
-                                    {/* <td className="p-3 text-center">
-                                        {review.replies &&
+                                    <td className="p-3 text-center">
+                                        {/* {review.replies &&
                                         review.replies.length > 0 ? (
                                             <span className="text-green-600 text-sm">
                                                 Replied
@@ -106,8 +121,9 @@ export default function ReviewPage({ kosId }: { kosId: number }) {
                                                 parentId={review.id}
                                                 onSuccess={fetchReviews}
                                             />
-                                        )}
-                                    </td> */}
+                                        )} */}
+                                        <DeleteReview selectedReview={review} onSuccess={() => setTimeout(() => fetchReviews(), 1000)}/>
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
@@ -128,7 +144,7 @@ export default function ReviewPage({ kosId }: { kosId: number }) {
                                             className="bg-gray-50 p-3 rounded-lg mb-2"
                                         >
                                             <p className="text-sm font-semibold">
-                                                {reply.user.name} (Owner)
+                                                {reply.user.name} 
                                             </p>
                                             <p className="text-sm text-gray-700">
                                                 {reply.comment}

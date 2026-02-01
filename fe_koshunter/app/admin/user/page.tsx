@@ -52,10 +52,9 @@ export default function UserPage() {
     }, [])
 
     const ROLE_STYLE: Record<string, string> = {
-    admin: "bg-red-100 text-red-600",
-    owner: "bg-cyan-100 text-cyan-600",
-    society: "bg-green-100 text-green-600",
-    user: "bg-blue-100 text-blue-600"
+        admin: "bg-red-100 text-red-600",
+        owner: "bg-cyan-100 text-cyan-600",
+        society: "bg-green-100 text-green-600",
     }
 
     return (
