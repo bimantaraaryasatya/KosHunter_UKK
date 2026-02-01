@@ -19,6 +19,11 @@ exports.getAllKos = async(request, response) => {
                             address: {
                                 [Op.like]: `%${search}%`
                             }
+                        },
+                        {
+                            gender: {
+                                [Op.like]: `%${search}%`
+                            }
                         }
                     ]
                 }
