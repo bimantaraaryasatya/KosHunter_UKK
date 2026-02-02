@@ -68,6 +68,17 @@ const Header = () => {
                 </Link>
               </li>
             ))}
+
+            {isLogin && (
+              <li>
+                <Link
+                  href="/history"
+                  className="relative pb-1 after:absolute after:left-0 after:bottom-0 after:h-0.5 after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
+                >
+                  History
+                </Link>
+              </li>
+            )}
           </ul>
 
           {/* AUTH AREA */}
@@ -89,26 +100,35 @@ const Header = () => {
               </button>
 
               {/* DROPDOWN */}
-              {showDropdown && (
-                <div className="absolute right-0 mt-3 w-44 bg-white border-transparent rounded-lg shadow-lg overflow-hidden">
-                  <Link
-                    href="/profile"
-                    className="flex items-center gap-2 px-4 py-3 text-sm hover:bg-gray-100"
-                    onClick={() => setShowDropdown(false)}
-                  >
-                    <User size={16} />
-                    Profile
-                  </Link>
+              <div
+                className={`
+                  absolute right-0 mt-3 w-44
+                  bg-white rounded-lg shadow-lg overflow-hidden
+                  transform transition-all duration-300 ease-out
+                  ${
+                    showDropdown
+                      ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
+                      : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
+                  }
+                `}
+              >
+                <Link
+                  href="/profile"
+                  className="flex items-center gap-2 px-4 py-3 text-sm hover:bg-gray-100"
+                  onClick={() => setShowDropdown(false)}
+                >
+                  <User size={16} />
+                  Profile
+                </Link>
 
-                  <button
-                    onClick={handleLogout}
-                    className="w-full flex items-center gap-2 px-4 py-3 text-sm text-red-500 hover:bg-red-50"
-                  >
-                    <LogOut size={16} />
-                    Logout
-                  </button>
-                </div>
-              )}
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center gap-2 px-4 py-3 text-sm text-red-500 hover:bg-red-50"
+                >
+                  <LogOut size={16} />
+                  Logout
+                </button>
+              </div>
             </div>
           )}
         </div>
@@ -129,6 +149,12 @@ const Header = () => {
             <li><Link href="/kos">Find Kos</Link></li>
             <li><Link href="/help">Help Center</Link></li>
 
+            {isLogin && (
+              <li>
+                <Link href="/history">History</Link>
+              </li>
+            )}
+            
             {!isLogin ? (
               <li>
                 <Link

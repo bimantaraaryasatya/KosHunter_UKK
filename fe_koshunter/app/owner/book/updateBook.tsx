@@ -28,24 +28,42 @@ const UpdateUser = ({ selectedBook, onSuccess }: {selectedBook: IBook, onSuccess
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault()
+
         try {
             const payload = new FormData()
             payload.append("status", book.status)
 
-            const res = await put(`${BASE_API_URL}/book/status/${selectedBook.id}`, payload, TOKEN)
+            const res = await put(
+                `${BASE_API_URL}/book/status/${selectedBook.id}`,
+                payload,
+                TOKEN
+            )
 
-            if (!res.data?.status) {
-                toast(res.data?.message, { hideProgressBar: true, containerId: "toastMenu", type: "warning", autoClose: 2000 })
-                return
-            }
+            toast(res.data.message, {
+                hideProgressBar: true,
+                containerId: "toastMenu",
+                type: "success",
+                autoClose: 1000
+            })
 
             setIsShow(false)
-            toast(res.data.message, { hideProgressBar: true, containerId: "toastMenu", type: "success", autoClose: 2000 })
             onSuccess()
+
         } catch (error: any) {
             console.log(error)
-            const message = error?.response?.data?.message || "Something went wrong"
-            toast(message, { hideProgressBar: true, containerId: "toastMenu", type: "error", autoClose: 2000 })
+
+            const message =
+                error?.response?.data?.message ??
+                error?.data?.message ??
+                error?.message ??
+                "Something went wrong"
+
+            toast(message, {
+                hideProgressBar: true,
+                containerId: "toastMenu",
+                type: "warning",
+                autoClose: 1000
+            })
         }
     }
 
