@@ -7,7 +7,7 @@ const upload = multer()
 
 app.get('/my', authenticateToken, authorizeRoles('owner'), reviewController.getMyReview)
 app.post('/', authenticateToken, authorizeRoles('society', 'admin'), upload.none(), reviewController.createReview)
-app.post('/reply', authenticateToken, authorizeRoles('society', 'owner', 'admin'), upload.none(), reviewController.replyReview)
+app.post('/reply', authenticateToken, authorizeRoles('owner', 'admin'), upload.none(), reviewController.replyReview)
 app.get('/:kos_id', authenticateToken, authorizeRoles('society', 'owner', 'admin'), reviewController.getReviewsWithReplies)
 app.get('/', authenticateToken, authorizeRoles('admin'), reviewController.getAllReview)
 app.delete('/:id', authenticateToken, authorizeRoles('admin', 'society'), reviewController.deleteReview)
