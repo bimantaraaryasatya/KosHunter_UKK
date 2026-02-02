@@ -155,8 +155,8 @@ exports.updateKos = async (request, response) => {
 
         const kos = await kosModel.findOne({ where: { id: kosId } });
         if (!kos) return response.status(404).json({ status: false, message: "Kos not found" });
-
-        if (kos.user_id !== request.user.id) return response.status(403).json({ status: false, message: "Not owner" });
+        const isAdmin = request.user.role === 'admin'
+        if (kos.user_id !== request.user.id && !isAdmin) return response.status(403).json({ status: false, message: "Not owner" });
 
         // hitung booking accepted
         const acceptedBookingCount = await bookModel.count({ where: { kos_id: kosId, status: 'accepted' } });
