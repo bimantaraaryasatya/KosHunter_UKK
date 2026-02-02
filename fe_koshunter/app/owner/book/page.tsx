@@ -52,7 +52,7 @@ export default function MyBookPage() {
         <div className="bg-white rounded-xl p-5 border-t-4 border-t-primary shadow-md">
             <h4 className="text-xl font-bold mb-2 text-black">My Kos Bookings</h4>
             <p className="text-sm text-gray-500 mb-4">
-                Manage all bookings for your kos
+                Manage your bookings of your own kos
             </p>
 
             {/* CONTENT */}

@@ -6,7 +6,7 @@ import { getCookie } from "@/lib/client-cookies"
 import { BASE_API_URL } from "@/global"
 import { get } from "@/lib/api-bridge"
 // import AddReview from "./addReview"
-// import ReplyReview from "./replyReview"
+import ReplyReview from "./replyReview"
 
 export default function ReviewPage({ kosId }: { kosId: number }) {
     const [reviews, setReviews] = useState<IReview[]>([])
@@ -52,7 +52,7 @@ export default function ReviewPage({ kosId }: { kosId: number }) {
                 Review Kos
             </h4>
             <p className="text-sm text-gray-500 mb-4">
-                Review & balasan pemilik kos
+                Manage review & reply of your own kos
             </p>
 
             {/* TOP BAR */}
@@ -101,7 +101,7 @@ export default function ReviewPage({ kosId }: { kosId: number }) {
                                         </span>
                                     </td>
 
-                                    {/* <td className="p-3 text-center">
+                                    <td className="p-3 text-center">
                                         {review.replies &&
                                         review.replies.length > 0 ? (
                                             <span className="text-green-600 text-sm">
@@ -110,10 +110,11 @@ export default function ReviewPage({ kosId }: { kosId: number }) {
                                         ) : (
                                             <ReplyReview
                                                 parentId={review.id}
+                                                kosId={review.kos.id}
                                                 onSuccess={fetchReviews}
                                             />
                                         )}
-                                    </td> */}
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
@@ -134,7 +135,7 @@ export default function ReviewPage({ kosId }: { kosId: number }) {
                                             className="bg-gray-50 p-3 rounded-lg mb-2"
                                         >
                                             <p className="text-sm font-semibold">
-                                                {reply.user.name} (Owner)
+                                                {reply.user.name} ({reply.user.role})
                                             </p>
                                             <p className="text-sm text-gray-700">
                                                 {reply.comment}

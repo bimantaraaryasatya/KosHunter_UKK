@@ -53,10 +53,10 @@ export default function ReviewPage({ kosId }: { kosId: number }) {
             <div className="flex justify-between">
                 <div>
                     <h4 className="text-xl font-bold mb-2 text-black">
-                        Review Kos
+                        Review Kos Data
                     </h4>
                     <p className="text-sm text-gray-500 mb-4">
-                        Review & balasan pemilik kos
+                        Manage all review & reply
                     </p>
                 </div>
                 <div className="flex items-center">

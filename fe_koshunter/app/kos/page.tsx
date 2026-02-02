@@ -110,7 +110,7 @@ export default function KosSocietyPage() {
                             <span className={`text-xs px-2 py-0.5 rounded ${GENDER_STYLE[data.gender?.toLowerCase() ?? ""] || "bg-gray-100 text-gray-600"}`}>
                                 {data.gender ?? "All"}
                             </span>
-                            <span className="text-xs text-red-500">
+                            <span className="text-xs text-red-500 italic">
                                 {data.available_room} Rooms Left
                             </span>
                             </div>

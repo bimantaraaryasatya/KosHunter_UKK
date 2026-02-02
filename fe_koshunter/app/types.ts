@@ -43,6 +43,7 @@ export interface IBook{
     kos?: {
         id: number
         name: string
+        total_price: number
     }
 }
 
