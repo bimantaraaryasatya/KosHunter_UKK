@@ -113,6 +113,13 @@ exports.getMyBook = async (request, response) => {
 
 exports.createBook = async (request, response) => {
     try {
+        if (request.user.role === 'owner') {
+            return response.status(403).json({
+                status: false,
+                message: "Owner cannot book their own kos"
+            })
+        }
+        
         const { kos_id, start_date, end_date } = request.body
         const idUser = request.user.id
 
