@@ -7,19 +7,20 @@ const axiosInstance = axios.create({
 })
 
 export const get = async (url: string, token?: string) => {
-    try{
-        let headers: any = {
-            "Authorization": `Bearer ${token}` || '',
+    try {
+        let headers: any = {}
+
+        if (token) {
+            headers.Authorization = `Bearer ${token}`
         }
-        let result = await axiosInstance.get(url, {
-            headers
-        })
+
+        const result = await axiosInstance.get(url, { headers })
 
         return {
             status: true,
             data: result.data
         }
-    }catch (error){
+    } catch (error) {
         const err = error as AxiosError<any>
 
         const message =
@@ -31,13 +32,12 @@ export const get = async (url: string, token?: string) => {
 
         throw {
             response: {
-                data: {
-                    message
-                }
+                data: { message }
             }
         }
     }
 }
+
 
 export const post = async (url: string, data: string | FormData, token: string) => {
     try {

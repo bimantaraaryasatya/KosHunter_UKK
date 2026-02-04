@@ -15,7 +15,18 @@ export default function BookPage() {
     const [keyword, setKeyword] = useState("")
     const [loading, setLoading] = useState(false)
 
-    const fetchUsers = async (search = "") => {
+    const countMonths = (start: string, end: string) => {
+        const startDate = new Date(start)
+        const endDate = new Date(end)
+
+        let months =
+            (endDate.getFullYear() - startDate.getFullYear()) * 12 +
+            (endDate.getMonth() - startDate.getMonth())
+
+        return months <= 0 ? 1 : months
+    }
+
+    const fetchBooks = async (search = "") => {
         try {
             setLoading(true)
             const token = getCookie("token")
@@ -40,7 +51,7 @@ export default function BookPage() {
     // debounce search
     useEffect(() => {
         const t = setTimeout(() => {
-            fetchUsers(keyword)
+            fetchBooks(keyword)
         }, 400)
 
         return () => clearTimeout(t)
@@ -48,7 +59,7 @@ export default function BookPage() {
 
     // initial load
     useEffect(() => {
-        fetchUsers()
+        fetchBooks()
     }, [])
 
     const STATUS_STYLE: Record<string, string> = {
@@ -78,7 +89,7 @@ export default function BookPage() {
                     />
                 </div>
 
-                <AddBook onSuccess={() => setTimeout(() => fetchUsers(), 1000)}/> 
+                <AddBook onSuccess={() => setTimeout(() => fetchBooks(), 1000)}/> 
             </div>
 
             {/* CONTENT */}
@@ -95,6 +106,8 @@ export default function BookPage() {
                                 <th className="p-3">Kos Name</th>
                                 <th className="p-3">Start Date</th>
                                 <th className="p-3">End Date</th>
+                                <th className="p-3">Duration</th>
+                                <th className="p-3">Total Price</th>
                                 <th className="p-3">Status</th>
                                 <th className="p-3 text-center">Action</th>
                             </tr>
@@ -117,14 +130,26 @@ export default function BookPage() {
                                     <td className="p-3 text-gray-600">
                                         {data.end_date}
                                     </td>
+                                    <td className="p-3 text-gray-600">
+                                        {countMonths(data.start_date, data.end_date)} Month(s)
+                                    </td>
+                                    <td className="p-3">
+                                        {data.kos
+                                            ? (() => {
+                                                const months = countMonths(data.start_date, data.end_date)
+                                                const total = months * data.kos.price_per_month
+                                                return `Rp ${total.toLocaleString("id-ID")}`
+                                            })()
+                                            : "-"}
+                                    </td>
                                     <td className="p-3">
                                         <span className={`px-3 py-1 text-xs rounded-full font-semibold ${STATUS_STYLE[data.status?.toLowerCase() ?? ""] || "bg-gray-100 text-gray-600"}`}>
                                             {data.status ?? "-"}
                                         </span>
                                     </td>
                                     <td className="p-3 text-center flex gap-4 justify-center">
-                                        <UpdateBook selectedBook={data} onSuccess={() => setTimeout(() => fetchUsers(), 1000)}/>
-                                        <DeleteBook selectedBook={data} onSuccess={() => setTimeout(() => fetchUsers(), 1000)}/>
+                                        <UpdateBook selectedBook={data} onSuccess={() => setTimeout(() => fetchBooks(), 1000)}/>
+                                        <DeleteBook selectedBook={data} onSuccess={() => setTimeout(() => fetchBooks(), 1000)}/>
                                     </td>
                                 </tr>
                             ))}

@@ -10,10 +10,8 @@ import { toast } from "react-toastify"
 import { FaPlus } from "react-icons/fa";
 import { ButtonPrimary, ButtonSuccess, ButtonDanger } from "@/components/buttonComponent"
 import { InputGroupComponent } from "@/components/inputComponent"
-import FileInput from "@/components/fileInput"
 import Modal from "@/components/modalComponent"
 import { IoMdClose } from "react-icons/io";
-import Select from "@/components/select"
 
 const AddBook = ({onSuccess} : {onSuccess: () => void}) => {
     const [isShow, setIsShow] = useState<boolean>(false)
