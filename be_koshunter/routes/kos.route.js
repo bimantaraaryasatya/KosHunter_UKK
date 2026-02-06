@@ -10,10 +10,10 @@ const upload = multer()
 
 app.get("/", kosController.getAllKos)
 app.get("/my", authenticateToken, authorizeRoles('owner'), kosController.getMyKos)
-app.get('/:id', kosController.getKosById)
 app.post("/find", authenticateToken, kosController.findKos)
 app.post("/", authenticateToken, authorizeRoles('owner', 'admin'), upload.none(), kosController.createKos)
 app.put("/:id", authenticateToken, authorizeRoles('owner', 'admin'), upload.none(), kosController.updateKos)
+app.get('/:id', kosController.getKosById)
 app.delete("/:id", authenticateToken, authorizeRoles('owner', 'admin'), kosController.deleteKos)
 
 app.post("/facility", authenticateToken, authorizeRoles('owner', 'admin'), kosFasilitieController.createFacilitiy)

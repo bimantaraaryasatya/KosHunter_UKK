@@ -2,9 +2,11 @@ const fs = require('fs')
 const path = require('path')
 const PDFDocument = require(`pdfkit`)
 const { sequelize } = require('../models/index')
+const kos_image = require('../models/kos_image')
 const bookModel = require(`../models/index`).book
 const kosModel = require(`../models/index`).kos
 const userModel = require(`../models/index`).user
+const kosImageModel = require(`../models/index`).kos_image
 const Op = require('sequelize').Op
 
 const formatRupiah = (number) => {
@@ -111,6 +113,66 @@ exports.getMyBook = async (request, response) => {
     }
 }
 
+exports.getMyBookingHistory = async (request, response) => {
+    try {
+        const userId = request.user.id
+
+        const books = await bookModel.findAll({
+            where: {
+                user_id: userId
+            },
+            include: [
+                {
+                    model: kosModel,
+                    as: 'kos',
+                    include: [
+                        {
+                            model: kosImageModel
+                        }
+                    ]
+                },
+                {
+                    model: userModel,
+                    as: 'user',
+                    attributes: ['id', 'name', 'email']
+                }
+            ],
+            order: [['createdAt', 'DESC']]
+        })
+
+        if (books.length === 0) {
+            return response.status(200).json({
+                status: true,
+                data: [],
+                message: 'No booking history found'
+            })
+        }
+
+        const result = books.map(b => {
+            const totalMonth = calculateMonths(b.start_date, b.end_date)
+            const totalPrice = b.kos.price_per_month * totalMonth
+
+            return {
+                ...b.toJSON(),
+                total_month: totalMonth,
+                total_price: totalPrice
+            }
+        })
+
+        return response.status(200).json({
+            status: true,
+            data: result,
+            message: 'Booking history loaded'
+        })
+
+    } catch (error) {
+        return response.status(500).json({
+            status: false,
+            message: error.message
+        })
+    }
+}
+
 exports.createBook = async (request, response) => {
     try {
         if (request.user.role === 'owner') {
@@ -119,9 +181,25 @@ exports.createBook = async (request, response) => {
                 message: "Owner cannot book their own kos"
             })
         }
-        
+
         const { kos_id, start_date, end_date } = request.body
         const idUser = request.user.id
+
+        const kos = await kosModel.findByPk(kos_id)
+
+        if (!kos) {
+            return response.status(404).json({
+                status: false,
+                message: "Kos not found"
+            })
+        }
+
+        if (kos.available_room <= 0) {
+            return response.status(400).json({
+                status: false,
+                message: "Room is already full"
+            })
+        }
 
         const newBook = await bookModel.create({
             kos_id,
