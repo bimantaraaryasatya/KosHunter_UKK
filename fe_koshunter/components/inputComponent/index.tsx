@@ -4,6 +4,7 @@ import { KeyboardEvent, ReactNode } from "react"
 
 type Props = {
     value: string
+    min?: string
     onChange: (value: string) => void
     type: "text" | "number" | "color" | "email" | "password" | "date"
     className ?: string
@@ -22,7 +23,7 @@ export const InputComponent = ({value, onChange, type, className, id, required, 
     )   
 }
 
-export const InputGroupComponent = ({value, onChange, type, className, id, required, placeholder, children, label, onKeyUp, readOnly}: Props) => {
+export const InputGroupComponent = ({value, onChange, type, className, id, required, placeholder, children, label, onKeyUp, readOnly, min}: Props) => {
     return (
         <div className="w-full flex flex-col gap-1 my-2">
             <strong className="text-xs font-bold text-slate-500">{label}{required == true ? <sup className="text-red-600"></sup> : <></>}</strong>
@@ -33,7 +34,7 @@ export const InputGroupComponent = ({value, onChange, type, className, id, requi
                             {children}
                         </div> : <div className=""></div>
                 }
-                <input type={type} id={id} value={value ?? ""} onChange={e => onChange(e.target.value)} className={`text-sm w-full rounded-r-md p-2 bg-white focus:outline-none ${className}`} required={required ? required : false} placeholder={placeholder || ""} readOnly={readOnly ? readOnly : false} onKeyUp={e => {if(onKeyUp) onKeyUp(e)}}/>
+                <input type={type} id={id} value={value ?? ""} onChange={e => onChange(e.target.value)} min={min} className={`text-sm w-full rounded-r-md p-2 bg-white focus:outline-none ${className}`} required={required ? required : false} placeholder={placeholder || ""} readOnly={readOnly ? readOnly : false} onKeyUp={e => {if(onKeyUp) onKeyUp(e)}}/>
             </div>
         </div>
     )

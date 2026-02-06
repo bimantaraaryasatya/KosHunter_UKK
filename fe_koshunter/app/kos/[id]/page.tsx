@@ -102,6 +102,11 @@ export default function KosDetailPage() {
     }
   }
 
+  const isRoomAvailable = (kos.available_room ?? kos.total_room) > 0
+  const isOwner = role === "owner"
+  const isDisabled = !isRoomAvailable || isOwner
+  
+
   return (
     <div>
       <Header />
@@ -217,11 +222,11 @@ export default function KosDetailPage() {
                 />
               </div>
 
-              <button className={`py-2 rounded-md ${role === 'owner'? "bg-gray-300 cursor-not-allowed": "bg-primary text-white"}`} disabled={role === 'owner'}>
+              <button className={`py-2 rounded-md ${isDisabled ? "bg-gray-300 cursor-not-allowed": "bg-primary hover:cursor-pointer text-white"}`} disabled={role === 'owner'}>
                 Ask Owner
               </button>
 
-              <button className={`py-2 rounded-md ${role === 'owner'? "bg-gray-300 cursor-not-allowed": "bg-primary text-white"}`} disabled={role === 'owner'} type="submit">
+              <button className={`py-2 rounded-md ${isDisabled ? "bg-gray-300 cursor-not-allowed": "bg-primary hover:cursor-pointer text-white"}`} disabled={role === 'owner'} type="submit">
                 Book
               </button>
             </div>

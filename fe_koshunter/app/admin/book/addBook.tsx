@@ -100,7 +100,7 @@ const AddBook = ({onSuccess} : {onSuccess: () => void}) => {
                     <div className="p-5">
                         <InputGroupComponent id={`kos_id`} type="number" value={book.kos_id.toString()} onChange={val => setBook({...book, kos_id: Number(val)})} required={true} label="ID Kos"/>
                         <InputGroupComponent id={`start_date`} type="date" value={book.start_date} onChange={val => setBook({...book, start_date: val})} required={true} label="Start Date"/>
-                        <InputGroupComponent id={`end_date`} type="date" value={book.end_date} onChange={val => setBook({...book, end_date: val})} required={true} label="End date"/>
+                        <InputGroupComponent id={`end_date`} type="date" value={book.end_date} min={book.start_date} onChange={val => setBook({...book, end_date: val})} required={true} label="End date"/>
                     </div>
                     {/* end modal body */}
 

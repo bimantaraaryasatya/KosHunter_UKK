@@ -83,7 +83,7 @@ export default function IndexPage() {
           ) : kos.length === 0 ? (
             <p className="text-gray-500">No Kos Available</p>
           ) : (
-            kos.slice(0, 4).map((data) => (
+            kos.slice(0, 6).map((data) => (
               <div
                 key={data.id}
                 className="border border-transparent rounded-xl overflow-hidden shadow-sm hover:scale-105 transition-all ease-in-out duration-300"

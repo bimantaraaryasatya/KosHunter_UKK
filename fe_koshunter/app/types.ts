@@ -44,6 +44,8 @@ export interface IBook{
         id: number
         name: string
         price_per_month: number
+        gender: string
+        kos_images: IKosImage[]
     }
 }
 
