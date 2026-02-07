@@ -1,6 +1,7 @@
 const reviewModel = require('../models/index').review
 const userModel = require('../models/index').user
 const kosModel = require('../models/index').kos
+const bookModel = require('../models/index').book
 const { Op } = require('sequelize')
 
 exports.getAllReview = async (request, response) => {
@@ -121,10 +122,26 @@ exports.createReview = async (request, response) => {
         const { kos_id, comment } = request.body
         const userData = request.user
 
+        // cek role
         if (!['society', 'admin'].includes(userData.role)) {
             return response.status(403).json({
                 status: false,
-                message: 'Only society can do a review'
+                message: 'Only society or admin can do a review'
+            })
+        }
+
+        const hasBooked = await bookModel.findOne({
+            where: {
+                kos_id: kos_id,
+                user_id: userData.id,
+                status: 'accepted'
+            }
+        })
+
+        if (userData.role === 'society' && !hasBooked) {
+            return response.status(403).json({
+                status: false,
+                message: 'You must book and be accepted before leaving a review'
             })
         }
 
@@ -140,6 +157,7 @@ exports.createReview = async (request, response) => {
             data: newReview,
             message: 'Review has been created'
         })
+
     } catch (error) {
         return response.status(500).json({
             status: false,
@@ -147,6 +165,7 @@ exports.createReview = async (request, response) => {
         })
     }
 }
+
 
 exports.replyReview = async (request, response) => {
     try {
