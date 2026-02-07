@@ -4,12 +4,13 @@ import { useEffect, useRef, useState } from "react";
 import Logo from "@/public/images/logo_koshunter.png";
 import Image from "next/image";
 import Link from "next/link";
-import { Menu, X, User, LogOut, ChevronDown } from "lucide-react";
+import { Menu, X, User, LogOut, ChevronDown, LayoutDashboard } from "lucide-react";
 import { getCookie, removeCookie } from "@/lib/client-cookies";
 import { useRouter } from "next/navigation";
 
 const Header = () => {
   const [open, setOpen] = useState(false);
+  const [role, setRole] = useState<string | null>(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [isLogin, setIsLogin] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -23,6 +24,14 @@ const Header = () => {
   useEffect(() => {
     const token = getCookie("token");
     setIsLogin(!!token);
+  }, []);
+
+  useEffect(() => {
+    const token = getCookie("token");
+    const userRole = getCookie("role") ?? null;
+
+    setIsLogin(!!token);
+    setRole(userRole);
   }, []);
 
   // close dropdown when click outside
@@ -42,6 +51,7 @@ const Header = () => {
 
   const handleLogout = () => {
     removeCookie("token");
+    removeCookie("role");
     setShowDropdown(false);
     setIsLogin(false);
     router.push("/login");
@@ -120,6 +130,17 @@ const Header = () => {
                   <User size={16} />
                   Profile
                 </Link>
+                
+                {(role === "admin" || role === "owner") && (
+                  <Link
+                    href={role === "admin" ? "/admin/dashboard" : "/owner/dashboard"}
+                    className="flex items-center gap-2 px-4 py-3 text-sm hover:bg-gray-100"
+                    onClick={() => setShowDropdown(false)}
+                  >
+                    <LayoutDashboard size={16} />
+                    Go to Dashboard
+                  </Link>
+                )}
 
                 <button
                   onClick={handleLogout}

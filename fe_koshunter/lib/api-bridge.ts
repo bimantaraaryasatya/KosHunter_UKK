@@ -38,7 +38,6 @@ export const get = async (url: string, token?: string) => {
     }
 }
 
-
 export const post = async (url: string, data: string | FormData, token: string) => {
     try {
         const typed: string = (typeof data == 'string') ? "application/json" : "multipart/form-data"

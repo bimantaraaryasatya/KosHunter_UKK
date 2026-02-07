@@ -7,10 +7,12 @@ import { BASE_API_URL, BASE_IMAGE_KOS } from "@/global"
 import { get } from "@/lib/api-bridge"
 import { IBook } from "../types"
 import { getCookie } from "@/lib/client-cookies"
+import { useRouter } from "next/navigation"
 
 export default function BookingHistoryPage() {
   const [books, setBooks] = useState<IBook[]>([])
   const [loading, setLoading] = useState(false)
+  const router = useRouter()
 
   const countMonths = (start: string, end: string) => {
         const startDate = new Date(start)
@@ -45,7 +47,16 @@ export default function BookingHistoryPage() {
     }
 
     fetchHistory()
-  }, [])
+  }, [router])
+
+
+  useEffect(() => {
+    const token = getCookie("token")
+    if (!token) {
+      router.replace("/login")
+    }
+  }, [router])
+
 
   const STATUS_STYLE: Record<string, string> = {
     pending: "bg-yellow-100 text-yellow-700",
@@ -84,6 +95,7 @@ export default function BookingHistoryPage() {
                   {books.map((book) => (
                     <tr
                       key={book.id}
+                      onClick={() => router.push(`/kos/${book.kos?.id}`)}
                       className="border-b border-[#E8E8E8] hover:bg-gray-50 transition"
                     >
                       {/* KOS */}
@@ -154,7 +166,8 @@ export default function BookingHistoryPage() {
                 return (
                   <div
                     key={book.id}
-                    className="border border-[#E8E8E8] rounded-lg p-4 flex flex-col gap-3"
+                    className="border border-[#E8E8E8] rounded-lg p-4 flex flex-col gap-3 cursor-pointer"
+                    onClick={() => router.push(`/kos/${book.kos?.id}`)}
                   >
                     <div className="flex gap-3">
                       <img

@@ -142,6 +142,9 @@ const Sidebar = ({ children, id, title, menuList }: ManagerProp) => {
                     <div className="px-4 py-2 text-text hover:bg-gray-100 cursor-pointer">
                         Settings
                     </div>
+                    <div className="px-4 py-2 text-text hover:bg-gray-100 cursor-pointer">
+                        <a href="/">Go to Society Page</a>
+                    </div>
                     <div
                         onClick={handleLogout}
                         className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-red-600">
