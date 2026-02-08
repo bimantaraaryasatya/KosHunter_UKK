@@ -67,31 +67,31 @@ exports.getAllKos = async(request, response) => {
 }
 
 exports.getKosById = async (request, response) => {
-  try {
-    const kosId = request.params.id
+    try {
+        const kosId = request.params.id
 
-    const kos = await kosModel.findOne({
-      where: { id: kosId },
-      include: [{ model: kosImageModel }, { model: userModel}]
-    })
+        const kos = await kosModel.findOne({
+        where: { id: kosId },
+        include: [{ model: kosImageModel }, { model: userModel}]
+        })
 
-    if (!kos) {
-      return response.status(404).json({
+        if (!kos) {
+        return response.status(404).json({
+            status: false,
+            message: "Kos not found"
+        })
+        }
+
+        return response.status(200).json({
+        status: true,
+        data: kos
+        })
+    } catch (error) {
+        return response.status(500).json({
         status: false,
-        message: "Kos not found"
-      })
+        message: error.message
+        })
     }
-
-    return response.status(200).json({
-      status: true,
-      data: kos
-    })
-  } catch (error) {
-    return response.status(500).json({
-      status: false,
-      message: error.message
-    })
-  }
 }
 
 exports.createKos = async (request, response) => {
