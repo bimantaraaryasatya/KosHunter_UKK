@@ -44,12 +44,6 @@ let MenuList: IPropMenu[] = [
         label: 'Review',
         icon: <FaComment/>
     },
-    {
-        id: `transaction`,
-        path: `/admin/transaction`,
-        label: `Transaction`,
-        icon: <CiCreditCard2/>
-    }
 ]
 
 export default MenuList

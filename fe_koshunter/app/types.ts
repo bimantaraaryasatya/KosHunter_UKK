@@ -18,6 +18,10 @@ export interface IKos{
     total_room: number
     available_room?: number
     gender: "male" | "female" | "all"
+    user?: {
+        id: number
+        email: string
+    }
     kos_images?: IKosImage[]
     createdAt?: string
     updatedAt?: string

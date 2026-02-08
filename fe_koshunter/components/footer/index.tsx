@@ -16,9 +16,9 @@ const Footer = () => {
                 <h4 className="text-[#898E8E] text-sm">Kos Hunter helps you find the perfect boarding house quickly and easily, anytime and anywhere.</h4>
                 </div>
                 <div className="text-[#898E8E] text-2xl flex gap-5">
-                <a href=""><FaLinkedin/></a>
-                <a href=""><FaYoutube/></a>
-                <a href=""><FaInstagram/></a>
+                <a href="" className="hover:text-primary"><FaLinkedin/></a>
+                <a href="" className="hover:text-primary"><FaYoutube/></a>
+                <a href="" className="hover:text-primary"><FaInstagram/></a>
                 </div>
             </div>
 
