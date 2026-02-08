@@ -1,4 +1,5 @@
 const kosModel = require('../models/index').kos
+const userModel = require ('../models/index').user
 const bookModel = require('../models/index').book
 const kosImageModel = require('../models/index').kos_image
 const Op = require('sequelize').Op
@@ -31,6 +32,11 @@ exports.getAllKos = async(request, response) => {
                 include: [
                     {
                         model: kosImageModel
+                    },
+                    {
+                        model: userModel,
+                        as: 'user',
+                        attributes: ['id', 'name', 'email']
                     }
                 ]
         })
@@ -66,7 +72,7 @@ exports.getKosById = async (request, response) => {
 
     const kos = await kosModel.findOne({
       where: { id: kosId },
-      include: [{ model: kosImageModel }]
+      include: [{ model: kosImageModel }, { model: userModel}]
     })
 
     if (!kos) {
