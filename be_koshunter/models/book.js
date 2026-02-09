@@ -14,7 +14,8 @@ module.exports = (sequelize, DataTypes) => {
     user_id: DataTypes.INTEGER,
     start_date: DataTypes.DATEONLY,
     end_date: DataTypes.DATEONLY,
-    status: DataTypes.ENUM('pending', 'accepted', 'rejected')
+    status: DataTypes.ENUM('pending', 'accepted', 'rejected'),
+    invoice_file: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'book',

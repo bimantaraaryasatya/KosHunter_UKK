@@ -1,5 +1,6 @@
 const express = require(`express`)
 const app = express()
+const fs = require('fs')
 const PORT = 8000
 const { checkConnection } = require('./connection');
 const cors = require('cors') 
@@ -26,6 +27,20 @@ const book = require(`./routes/book.route`)
 app.use(`/book`, book)
 
 app.use('/kos_images', express.static(path.join(__dirname, 'public/kos_images')));
+
+app.get('/invoices/:file', (req, res) => {
+  const filePath = path.resolve(__dirname, 'invoices', req.params.file)
+
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).json({ message: 'Invoice not found' })
+  }
+
+  res.setHeader('Content-Type', 'application/pdf')
+  res.setHeader('Content-Disposition', 'inline')
+
+  res.sendFile(filePath)
+})
+
 
 checkConnection()
   .then(() => {

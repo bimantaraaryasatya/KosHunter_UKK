@@ -155,7 +155,7 @@ exports.getMyBookingHistory = async (request, response) => {
             return {
                 ...b.toJSON(),
                 total_month: totalMonth,
-                total_price: totalPrice
+                total_price: totalPrice,
             }
         })
 
@@ -379,7 +379,7 @@ exports.updateStatusBook = async (request, response) => {
             })
         }
 
-        await bookModel.update({status}, {where: {id: idBook}})
+        // await bookModel.update({status}, {where: {id: idBook}})
 
         let invoice = null
 
@@ -444,21 +444,21 @@ exports.updateStatusBook = async (request, response) => {
                 .fontSize(10)
                 .font('Helvetica')
                 .text(`Invoice Number : ${invoiceNumber}`)
-                .text(`Tanggal        : ${formatDate(today)}`)
+                .text(`Date        : ${formatDate(today)}`)
 
             doc.moveDown()
 
             doc
                 .fontSize(12)
                 .font('Helvetica-Bold')
-                .text('Detail Kos')
+                .text('Kos Detail')
 
             doc
                 .fontSize(10)
                 .font('Helvetica')
-                .text(`Nama Kos   : ${booking.kos.name}`)
-                .text(`Alamat     : ${booking.kos.address}`)
-                .text(`Harga/Bln  : ${formatRupiah(booking.kos.price_per_month)}`)
+                .text(`Kos Name   : ${booking.kos.name}`)
+                .text(`Adress     : ${booking.kos.address}`)
+                .text(`Price/Month  : ${formatRupiah(booking.kos.price_per_month)}`)
 
             doc.moveDown()
 
@@ -466,12 +466,12 @@ exports.updateStatusBook = async (request, response) => {
             doc
                 .fontSize(12)
                 .font('Helvetica-Bold')
-                .text('Data Penyewa')
+                .text('User Detail')
 
             doc
                 .fontSize(10)
                 .font('Helvetica')
-                .text(`Nama  : ${booking.user.name}`)
+                .text(`Name  : ${booking.user.name}`)
                 .text(`Email : ${booking.user.email}`)
 
             doc.moveDown()
@@ -479,14 +479,14 @@ exports.updateStatusBook = async (request, response) => {
             doc
                 .fontSize(12)
                 .font('Helvetica-Bold')
-                .text('Detail Booking')
+                .text('Booking Detail')
 
             doc
                 .fontSize(10)
                 .font('Helvetica')
-                .text(`Periode    : ${formatDate(booking.start_date)} - ${formatDate(booking.end_date)}`)
-                .text(`Durasi     : ${totalMonth} bulan`)
-                .text(`Total Bayar: ${formatRupiah(totalPrice)}`)
+                .text(`Period   : ${formatDate(booking.start_date)} - ${formatDate(booking.end_date)}`)
+                .text(`Duration     : ${totalMonth} bulan`)
+                .text(`Total Pay: ${formatRupiah(totalPrice)}`)
 
             doc.moveDown(2)
 
@@ -501,7 +501,7 @@ exports.updateStatusBook = async (request, response) => {
                 .fontSize(9)
                 .font('Helvetica-Oblique')
                 .text(
-                    'Invoice ini sah dan digunakan sebagai bukti transaksi. Tidak memerlukan tanda tangan.',
+                    'This invoice is valid and serves as proof of transaction. No signature is required.',
                     { align: 'center' }
                 )
 
@@ -515,11 +515,28 @@ exports.updateStatusBook = async (request, response) => {
             doc.end()
         }
 
-        await bookModel.update(
-            { status },
-            { where: { id: idBook }, transaction: t }
-        )
+        if (status === 'accepted') {
+            const invoiceFile = `/invoices/invoice-${idBook}.pdf`
 
+            await bookModel.update(
+                {
+                    status,
+                    invoice_file: invoiceFile
+                },
+                {
+                    where: { id: idBook },
+                    transaction: t
+                }
+            )
+        } else {
+            await bookModel.update(
+                { status },
+                {
+                    where: { id: idBook },
+                    transaction: t
+                }
+            )
+        }
         await t.commit()
 
         return response.json({
