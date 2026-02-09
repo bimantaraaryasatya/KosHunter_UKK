@@ -23,7 +23,7 @@ exports.getAllKos = async(request, response) => {
                         },
                         {
                             gender: {
-                                [Op.like]: `%${search}%`
+                                [Op.like]: `${search}%`
                             }
                         }
                     ]

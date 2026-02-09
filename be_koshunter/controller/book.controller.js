@@ -272,7 +272,7 @@ exports.updateBook = async (request, response) => {
             })
         }
 
-        if (existingBook.user_id !== request.user.id) {
+        if (existingBook.user_id !== request.user.id && request.user.role !== 'admin') {
             return response.status(403).json({
                 status: false,
                 message: 'You can only update your own booking'
