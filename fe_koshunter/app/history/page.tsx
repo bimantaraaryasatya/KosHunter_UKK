@@ -84,9 +84,10 @@ export default function BookingHistoryPage() {
                   <tr className="text-left text-sm text-gray-500 border-b border-[#E8E8E8]">
                     <th className="p-3">Kos</th>
                     <th className="p-3">Total</th>
-                    <th className="p-3">Status</th>
                     <th className="p-3">Duration</th>
                     <th className="p-3">Booked By</th>
+                    <th className="p-3">Status</th>
+                    <th className="p-3">Invoice</th>
                     <th className="p-3">ID Booking</th>
                   </tr>
                 </thead>
@@ -129,6 +130,15 @@ export default function BookingHistoryPage() {
                         : "-"}
                       </td>
 
+                      <td className="p-3">
+                        {countMonths(book.start_date, book.end_date)} Month(s)
+                      </td>
+
+                      {/* EMAIL */}
+                      <td className="p-3 text-sm break-all max-w-[220px]">
+                        {book.user?.email ?? "You"}
+                      </td>
+                      
                       {/* STATUS */}
                       <td className="p-3">
                         <span
@@ -139,12 +149,16 @@ export default function BookingHistoryPage() {
                       </td>
 
                       <td className="p-3">
-                        {countMonths(book.start_date, book.end_date)} Month(s)
-                      </td>
-
-                      {/* EMAIL */}
-                      <td className="p-3 text-sm break-all max-w-[220px]">
-                        {book.user?.email ?? "You"}
+                        {book.status === 'accepted' ? (
+                          <a
+                            href={`${BASE_API_URL}/invoices/invoice-${book.id}.pdf`}
+                            target="_blank"
+                            onClick={(e) => e.stopPropagation()}
+                            className="text-blue-600 text-xs underline"
+                          >
+                            View Invoice
+                          </a>
+                        ) : (<span className="text-md text-gray-400">-</span>)}
                       </td>
 
                       {/* ID */}

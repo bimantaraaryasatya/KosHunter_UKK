@@ -39,7 +39,8 @@ export interface IBook{
     user_id: number,
     start_date: string,
     end_date: string,
-    status: "pending" | "accepted" | "rejected"
+    status: "pending" | "accepted" | "rejected",
+    invoice_file?: string,
     user?: {
         id: number
         email: string

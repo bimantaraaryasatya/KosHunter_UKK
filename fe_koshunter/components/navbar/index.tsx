@@ -168,7 +168,7 @@ const Header = () => {
         <div className="md:hidden absolute top-full left-0 w-full bg-white border-t border-[#E8E8E8] shadow-md p-6">
           <ul className="flex flex-col gap-6 font-medium tracking-wider">
             <li><Link href="/kos">Find Kos</Link></li>
-            <li><Link href="/help">Help Center</Link></li>
+            <li><Link href="#">Help Center</Link></li>
 
             {isLogin && (
               <li>

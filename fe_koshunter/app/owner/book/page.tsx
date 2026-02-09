@@ -83,6 +83,7 @@ export default function MyBookPage() {
                                 <th className="p-3">Duration</th>
                                 <th className="p-3">Total Price</th>
                                 <th className="p-3">Status</th>
+                                <th className="p-3">Invoice</th>
                                 <th className="p-3 text-center">Action</th>
                             </tr>
                         </thead>
@@ -125,6 +126,19 @@ export default function MyBookPage() {
                                         >
                                             {data.status ?? "-"}
                                         </span>
+                                    </td>
+                                    <td className="p-3">
+                                        {data.status === 'accepted' ? (
+                                        <a
+                                            // href={`${BASE_API_URL}${data.invoice_file}`}
+                                            href={`${BASE_API_URL}/invoices/invoice-${data.id}.pdf`}
+                                            target="_blank"
+                                            onClick={(e) => e.stopPropagation()}
+                                            className="text-blue-600 text-xs underline"
+                                        >
+                                            View Invoice
+                                        </a>
+                                        ): (<span className="text-md text-gray-400">-</span>)}
                                     </td>
                                     <td className="p-3 text-center flex gap-4 justify-center">
                                         <UpdateBook selectedBook={data} onSuccess={() => setTimeout(() => fetchBooks(), 1000)}/>
