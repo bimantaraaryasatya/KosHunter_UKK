@@ -18,7 +18,7 @@ const Header = () => {
 
   const menus = [
     { label: "Find Kos", href: "/kos" },
-    { label: "Help Center", href: "/help" },
+    { label: "Help Center", href: "/#" },
   ];
 
   useEffect(() => {

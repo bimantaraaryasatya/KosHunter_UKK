@@ -5,7 +5,7 @@ import Header from "@/components/navbar"
 import Footer from "@/components/footer"
 import { BASE_API_URL, BASE_IMAGE_KOS } from "@/global"
 import { get } from "@/lib/api-bridge"
-import { IBook } from "../types"
+import { IBook, IUser, IKos } from "../types"
 import { getCookie } from "@/lib/client-cookies"
 import { useRouter } from "next/navigation"
 
@@ -227,9 +227,24 @@ export default function BookingHistoryPage() {
                       </span>
                     </div>
 
-                    <p className="text-xs break-all text-gray-600">
-                      {book.user?.email ?? "You"}
-                    </p>
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs break-all text-gray-600">
+                        {book.user?.email ?? "You"}
+                      </p>
+
+                      <div>
+                        {book.status === 'accepted' ? (
+                          <a
+                            href={`${BASE_API_URL}/invoices/invoice-${book.id}.pdf`}
+                            target="_blank"
+                            onClick={(e) => e.stopPropagation()}
+                            className="text-blue-600 text-xs underline"
+                          >
+                            View Invoice
+                          </a>
+                        ) : (<span className="text-md text-gray-400">-</span>)}
+                      </div>
+                    </div>
                   </div>
                 )
               })}
