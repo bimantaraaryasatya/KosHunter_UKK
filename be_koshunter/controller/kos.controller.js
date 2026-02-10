@@ -69,7 +69,6 @@ exports.getAllKos = async(request, response) => {
 exports.getKosById = async (request, response) => {
     try {
         const kosId = request.params.id
-
         const kos = await kosModel.findOne({
         where: { id: kosId },
         include: [{ model: kosImageModel }, { model: userModel}]

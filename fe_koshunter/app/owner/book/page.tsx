@@ -32,7 +32,7 @@ export default function MyBookPage() {
             if (!token) return
 
             // 👉 endpoint diganti /book/my
-            const url = `${BASE_API_URL}/book/my`
+            const url = `${BASE_API_URL}/book/my?search=${search}`
             const response = await get(url, token)
 
             if (response?.data?.status) {
@@ -47,6 +47,14 @@ export default function MyBookPage() {
             setLoading(false)
         }
     }
+
+    useEffect(() => {
+        const t = setTimeout(() => {
+            fetchBooks(keyword)
+        }, 400)
+
+        return () => clearTimeout(t)
+    }, [keyword])
 
     // initial load
     useEffect(() => {
@@ -65,6 +73,21 @@ export default function MyBookPage() {
             <p className="text-sm text-gray-500 mb-4">
                 Manage your bookings of your own kos
             </p>
+
+            {/* TOP BAR */}
+            <div className="flex justify-between items-center mb-4 gap-4">
+                {/* SEARCH */}
+                <div className="relative w-full max-w-md">
+                    <CiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-text" />
+                    <input
+                        type="text"
+                        placeholder="Search book..."
+                        className="w-full pl-10 pr-4 py-2 border border-primary rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                        value={keyword}
+                        onChange={(e) => setKeyword(e.target.value)}
+                    />
+                </div>
+            </div>
 
             {/* CONTENT */}
             {loading ? (

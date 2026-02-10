@@ -3,6 +3,7 @@ const path = require('path')
 const PDFDocument = require(`pdfkit`)
 const { sequelize } = require('../models/index')
 const kos_image = require('../models/kos_image')
+const { where } = require('sequelize')
 const bookModel = require(`../models/index`).book
 const kosModel = require(`../models/index`).kos
 const userModel = require(`../models/index`).user
@@ -29,7 +30,15 @@ const calculateMonths = (start, end) => {
 
 exports.getAllBook = async (request, response) => {
     try {
+        const { search } = request.query
         const books = await bookModel.findAll({
+            where: search ?{
+                [Op.or]: [
+                    { status: { [Op.substring]: search }},
+                    { start_date: { [Op.substring]: search }},
+                    { end_date: { [Op.substring]: search }}
+                ]
+            } : undefined,
             include: [
                 { model: kosModel, as: 'kos' }, // nama di response berubah menjadi "ko" !Perhatian
                 { model: userModel, as: 'user' }
@@ -60,9 +69,15 @@ exports.getAllBook = async (request, response) => {
 exports.getMyBook = async (request, response) => {
     try {
         const ownerId = request.user.id
-
-        // ambil semua booking dari kos milik owner
+        const { search } = request.query
         const books = await bookModel.findAll({
+            where: search ?{
+                [Op.or]: [
+                    { status: { [Op.substring]: search }},
+                    { start_date: { [Op.substring]: search }},
+                    { end_date: { [Op.substring]: search }}
+                ]
+            } : undefined,
             include: [
                 {
                     model: kosModel,
